@@ -57,6 +57,41 @@ class authService {
       message: "Xác thực OTP thành công! Tài khoản đã được kích hoạt.",
     };
   }
+
+  async login(email, password) {
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error("Email hoặc mật khẩu không đúng!");
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new Error("Email hoặc mật khẩu không đúng!");
+    }
+
+    if (!user.isVerified) {
+      throw new Error("Tài khoản chưa được xác thực!");
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    return { success: true, message: "Đăng nhập thành công!", token };
+  }
+
+  async editProfile(fullName, email) {
+    const user = await User.findById(email);
+    if (!user) {
+      throw new Error("Người dùng không tồn tại!");
+    }
+
+    user.fullName = fullName || user.fullName;
+    user.email = email || user.email;
+    await user.save();
+
+    return { success: true, message: "Cập nhật thông tin thành công!", user };
+  }
 }
 
 export default new authService();
