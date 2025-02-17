@@ -2,6 +2,7 @@ import User from "../model/user.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { sendOTP } from "../utils/sendOTP.js";
+import jwt from "jsonwebtoken";
 
 class authService {
   async register(email, password, confirmPassword, fullName) {
@@ -35,6 +36,7 @@ class authService {
   async verifyOtp(email, otp) {
     const user = await User.findOne({ email });
 
+    console.log(user);
     if (!user) {
       throw new Error("Người dùng không tồn tại!");
     }

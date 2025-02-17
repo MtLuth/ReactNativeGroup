@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParamList} from '../navigation/AppNavigator'; // Adjust the import path as needed
+import {RootStackParamList} from '../navigation/AppNavigator'; // Đảm bảo đường dẫn đúng
 import {RouteProp} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type SplashScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -16,11 +17,26 @@ interface Props {
 }
 
 const SplashScreen: React.FC<Props> = ({navigation}) => {
+  const checkLogin = async () => {
+    try {
+      const token = await AsyncStorage.getItem('assetToken');
+      if (token) {
+        navigation.replace('Tab');
+      } else {
+        navigation.replace('Auth');
+      }
+    } catch (error) {
+      console.error('Failed to fetch the token from AsyncStorage:', error);
+    }
+  };
+
   useEffect(() => {
-    setTimeout(() => {
-      navigation.replace('Onboard');
-    }, 5000);
-  }, [navigation]);
+    const timeout = setTimeout(() => {
+      checkLogin();
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  });
 
   return (
     <View style={styles.container}>
@@ -35,21 +51,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0', // Màu nền cho splash
+    backgroundColor: '#f0f0f0',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
-    marginTop: 20, // Điều chỉnh vị trí lên xuống của chữ
+    marginTop: 20,
   },
   subtitle: {
     fontSize: 18,
     fontWeight: '400',
     textAlign: 'center',
     position: 'absolute',
-    bottom: 20, // Điều chỉnh vị trí xuống gần cuối màn hình
+    bottom: 20,
   },
 });
 

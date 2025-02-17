@@ -10,12 +10,12 @@ const OnboardScreen = ({navigation}: {navigation: any}) => {
     if (currentTextIndex < onboardTexts.length - 1) {
       setCurrentTextIndex(currentTextIndex + 1);
     } else {
-      navigation.replace('Login');
+      navigation.replace('Auth');
     }
   };
 
   const handleSkip = () => {
-    navigation.replace('Login');
+    navigation.replace('Auth');
   };
 
   return (

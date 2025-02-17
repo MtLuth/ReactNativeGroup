@@ -8,8 +8,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = 'http://192.168.1.138:8080';
 
 const LoginScreen = ({navigation}: {navigation: any}) => {
   const [email, setEmail] = useState('');
@@ -22,8 +23,10 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
         email,
         password,
       });
-      setMessage(response.data.message);
-      navigation.navigate('Home');
+      const {message, token} = response.data;
+      setMessage(message);
+      await AsyncStorage.setItem('assetToken', token);
+      navigation.replace('Tab');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setMessage(error.response.data.error);

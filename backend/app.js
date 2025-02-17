@@ -4,6 +4,8 @@ import morgan from "morgan";
 import errorHandler from "./controller/errorController.js";
 import { authRouter } from "./routes/authRoute.js";
 import dotenv from "dotenv";
+import { categoryRouter } from "./routes/categoryRoute.js";
+import { productRouter } from "./routes/productRoute.js";
 
 dotenv.config();
 
@@ -16,6 +18,8 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 app.use(`${API_PATH}/auth`, authRouter);
+app.use(`${API_PATH}/category`, categoryRouter);
+app.use(`${API_PATH}/product`, productRouter);
 
 console.log(API_PATH);
 

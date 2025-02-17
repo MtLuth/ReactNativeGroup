@@ -1,15 +1,44 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
-import RegisterScreen from '../screen/RegisterScreen';
+import {createStackNavigator} from '@react-navigation/stack';
+import {OnboardScreen, SplashScreen} from '../screen';
+import TabNavigator from './TabNavigator';
+import AuthNavigator from './AuthNavigator';
 
-const Stack = createStackNavigator();
+export type RootStackParamList = {
+  Splash: undefined;
+  Home: undefined;
+  Auth: undefined;
+  Onboard: undefined;
+  Tab: undefined;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Navigator initialRouteName="Splash">
+        <Stack.Screen
+          name="Splash"
+          component={SplashScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Onboard"
+          component={OnboardScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Tab"
+          component={TabNavigator}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Auth"
+          component={AuthNavigator}
+          options={{headerShown: false}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -15,6 +15,29 @@ class AuthController {
       data: savedUser,
     });
   });
+
+  login = catchAsync(async (req, res, next) => {
+    const { email, password } = req.body;
+
+    const loginResponse = await authService.login(email, password);
+
+    res.status(200).json({
+      status: "success",
+      message: loginResponse.message,
+      token: loginResponse.token,
+    });
+  });
+
+  verifyOtp = catchAsync(async (req, res, next) => {
+    const { email, otp } = req.body;
+
+    const verificationResponse = await authService.verifyOtp(email, otp);
+
+    res.status(200).json({
+      status: "success",
+      message: verificationResponse.message,
+    });
+  });
 }
 
 export default new AuthController();
