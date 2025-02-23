@@ -37,10 +37,33 @@ class AuthController {
       message: response.message,
     });
   });
+
+  sendOTPVerifyEmail = catchAsync(async (req, res, next) => {
+    const { id, email } = req.body;
+
+    const response = await authService.sendOTPVerifyEmail(id, email);
+
+    res.status(200).json({
+      status: "success",
+      message: response.message,
+    });
+  });
+
   verifyOtp = catchAsync(async (req, res, next) => {
     const { email, otp } = req.body;
 
     const verificationResponse = await authService.verifyOtp(email, otp);
+
+    res.status(200).json({
+      status: "success",
+      message: verificationResponse.message,
+    });
+  });
+
+  verifyOtpWithId = catchAsync(async (req, res, next) => {
+    const { id, otp } = req.body;
+
+    const verificationResponse = await authService.verifyOTPWithId(id, otp);
 
     res.status(200).json({
       status: "success",

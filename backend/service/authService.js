@@ -59,6 +59,30 @@ class authService {
       message: "Xác thực OTP thành công! Tài khoản đã được kích hoạt.",
     };
   }
+
+  async verifyOTPWithId(id, otp) {
+    const user = await User.findById(id);
+
+    console.log(user);
+    if (!user) {
+      throw new Error("Người dùng không tồn tại!");
+    }
+
+    if (user.otp !== otp || new Date() > user.otpExpires) {
+      throw new Error("Mã OTP không hợp lệ hoặc đã hết hạn!");
+    }
+
+    user.isVerified = true;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    return {
+      success: true,
+      message: "Xác thực OTP thành công! Tài khoản đã được kích hoạt.",
+    };
+  }
+
   async resendOtp(email) {
     const user = await User.findOne({ email });
 
@@ -84,6 +108,29 @@ class authService {
       message: "Mã OTP mới đã được gửi vào email của bạn!",
     };
   }
+
+  async sendOTPVerifyEmail(id, email) {
+    const user = await User.findById(id);
+
+    if (!user) {
+      throw new Error("Người dùng không tồn tại!");
+    }
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    await sendOTP(email, otp);
+
+    return {
+      success: true,
+      message: "Mã OTP mới đã được gửi vào email của bạn!",
+    };
+  }
+
   async login(email, password) {
     const user = await User.findOne({ email });
     if (!user) {
@@ -108,6 +155,28 @@ class authService {
     );
 
     return { success: true, message: "Đăng nhập thành công!", token };
+  }
+
+  async editProfile(fullName, email) {
+    const user = await User.findById(email);
+    if (!user) {
+      throw new Error("Người dùng không tồn tại!");
+    }
+
+    user.fullName = fullName || user.fullName;
+    user.email = email || user.email;
+    await user.save();
+
+    return { success: true, message: "Cập nhật thông tin thành công!", user };
+  }
+
+  async getProfile(id) {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error("Người dùng không tồn tại");
+    }
+    const { _id, email, fullName, avatar } = user;
+    return { _id, email, fullName, avatar };
   }
 }
 
