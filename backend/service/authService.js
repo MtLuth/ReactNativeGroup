@@ -109,28 +109,6 @@ class authService {
 
     return { success: true, message: "Đăng nhập thành công!", token };
   }
-
-  async editProfile(fullName, email) {
-    const user = await User.findById(email);
-    if (!user) {
-      throw new Error("Người dùng không tồn tại!");
-    }
-
-    user.fullName = fullName || user.fullName;
-    user.email = email || user.email;
-    await user.save();
-
-    return { success: true, message: "Cập nhật thông tin thành công!", user };
-  }
-
-  async getProfile(id) {
-    const user = await User.findById(id);
-    if (!user) {
-      throw new Error("Người dùng không tồn tại");
-    }
-    const { _id, email, fullName, avatar } = user;
-    return { _id, email, fullName, avatar };
-  }
 }
 
 export default new authService();

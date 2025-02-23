@@ -47,15 +47,6 @@ class AuthController {
       message: verificationResponse.message,
     });
   });
-
-  getUserInformation = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
-    const user = await authService.getProfile(id);
-    res.status(200).json({
-      status: "success",
-      message: user,
-    });
-  });
 }
 
 export default new AuthController();
