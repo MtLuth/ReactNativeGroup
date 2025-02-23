@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {useFocusEffect} from '@react-navigation/native'; // Import useFocusEffect
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -11,20 +12,31 @@ import {
   StyleSheet,
 } from 'react-native';
 import {Icon} from 'react-native-elements';
+import {Category} from '../models/Category';
+import {showErrorMessage, showSuccessMessage} from '../utils/ToastMessage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {User} from '../models/User';
 
-const HomeScreen = navigation => {
-  const [categories, setCategories] = useState([]);
+import {Buffer} from 'buffer';
+
+const HomeScreen = ({navigation}: {navigation: any}) => {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [bestSellers, setBestSellers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [currentUser, setCurrentUser] = useState<User>();
   const [page, setPage] = useState(1);
 
   axios.defaults.baseURL = 'http://192.168.1.138:8080';
 
-  useEffect(() => {
-    fetchCategories();
-    fetchBestSellers();
-    fetchProducts();
-  }, [navigation]);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCategories();
+      fetchBestSellers();
+      fetchProducts();
+      fetchUserInformation();
+      console.log('change');
+    }, []),
+  );
 
   const fetchCategories = async () => {
     try {
@@ -52,35 +64,63 @@ const HomeScreen = navigation => {
     // Gọi API lấy danh sách sản phẩm theo giá tăng dần (lazy loading)
   };
 
+  const fetchUserInformation = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('assetToken');
+
+      if (accessToken) {
+        console.log('Token:', accessToken);
+
+        const decodedToken = JSON.parse(
+          Buffer.from(accessToken.split('.')[1], 'base64').toString(),
+        );
+        console.log('Decoded Token:', decodedToken);
+
+        const {userId} = decodedToken;
+        console.log('UserId:', userId);
+
+        try {
+          const response = await axios.get(`api/v1/auth/${userId}`);
+          const user = response.data?.message;
+          console.log('User Info:', user);
+          setCurrentUser(user);
+        } catch (error) {
+          showErrorMessage('Lỗi khi lấy thông tin người dùng');
+          console.error('Error fetching user information:', error);
+        }
+      } else {
+        console.log('No access token found');
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
-        <Icon
-          name="heartbeat"
-          type="font-awesome"
-          color="#f50"
-          onPress={() => console.log('hello')}
-        />
+        <TouchableOpacity onPress={() => showSuccessMessage('hello')}>
+          <Icon name="arrow-left" type="font-awesome" color="#000" />
+        </TouchableOpacity>
         <TextInput placeholder="Search" style={styles.searchInput} />
         <TouchableOpacity>
-          <Text style={styles.icon}>🔔</Text>
+          <Icon name="bell" type="font-awesome" color="#000" />
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={{uri: 'https://via.placeholder.com/40'}}
+            source={{
+              uri: currentUser?.avatar,
+            }}
             style={styles.avatar}
           />
         </TouchableOpacity>
       </View>
 
       <ScrollView>
-        {/* Slide Show */}
         <View style={styles.slideShow}>
           <Text style={styles.slideShowText}>Slide show</Text>
         </View>
 
-        {/* Danh sách category */}
         <View style={styles.section}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {categories.map(category => (
@@ -91,11 +131,10 @@ const HomeScreen = navigation => {
           </ScrollView>
         </View>
 
-        {/* 10 sản phẩm bán chạy */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Danh sách sản phẩm</Text>
           {bestSellers.map(product => (
-            <View key={product.id} style={styles.productItem}>
+            <View key={product._id} style={styles.productItem}>
               <Image
                 source={{uri: product.imageUrl}}
                 style={styles.productImage}
@@ -109,7 +148,7 @@ const HomeScreen = navigation => {
         <View style={styles.section}>
           <FlatList
             data={products}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item._id}
             renderItem={({item}) => (
               <View style={styles.productItem}>
                 <Image

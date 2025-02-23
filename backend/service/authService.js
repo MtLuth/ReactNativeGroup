@@ -75,9 +75,13 @@ class authService {
       throw new Error("Tài khoản chưa được xác thực!");
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     return { success: true, message: "Đăng nhập thành công!", token };
   }
@@ -93,6 +97,15 @@ class authService {
     await user.save();
 
     return { success: true, message: "Cập nhật thông tin thành công!", user };
+  }
+
+  async getProfile(id) {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error("Người dùng không tồn tại");
+    }
+    const { _id, email, fullName, avatar } = user;
+    return { _id, email, fullName, avatar };
   }
 }
 

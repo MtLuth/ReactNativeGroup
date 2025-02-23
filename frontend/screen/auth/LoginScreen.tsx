@@ -9,30 +9,29 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {showErrorMessage, showSuccessMessage} from '../../utils/ToastMessage';
 
 axios.defaults.baseURL = 'http://192.168.1.138:8080';
 
 const LoginScreen = ({navigation}: {navigation: any}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-
   const handleLogin = async () => {
     try {
       const response = await axios.post('/api/v1/auth/login', {
         email,
         password,
       });
-      const {message, token} = response.data;
-      setMessage(message);
+      const {resMessage, token} = response.data;
+      showSuccessMessage(resMessage);
       await AsyncStorage.setItem('assetToken', token);
+      await AsyncStorage.setItem('email', email);
       navigation.replace('Tab');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setMessage(error.response.data.error);
+        showErrorMessage(error.response.data.error);
       } else {
-        console.error('Unexpected error:', error);
-        setMessage('An unexpected error occurred');
+        showErrorMessage('An unexpected error occurred');
       }
     }
   };
@@ -56,7 +55,7 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.customButton}
-          onPress={() => navigation.navigate('Register')}>
+          onPress={() => navigation.navigate('RegisterScreen')}>
           <Text style={styles.customButtonText}>Register</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -65,7 +64,6 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
           <Text style={styles.customButtonText}>Forgot Password</Text>
         </TouchableOpacity>
       </View>
-      {message ? <Text>{message}</Text> : null}
     </View>
   );
 };

@@ -7,6 +7,11 @@ const userSchema = new mongoose.Schema({
   otp: { type: String },
   otpExpires: { type: Date },
   isVerified: { type: Boolean, default: false },
+  avatar: {
+    type: String,
+    default:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFCzxivJXCZk0Kk8HsHujTO3Olx0ngytPrWw&s",
+  },
 });
 
 const User = mongoose.model("User", userSchema);
