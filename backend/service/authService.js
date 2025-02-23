@@ -66,10 +66,6 @@ class authService {
       throw new Error("Người dùng không tồn tại!");
     }
 
-    if (user.isVerified) {
-      throw new Error("Tài khoản đã xác thực trước đó!");
-    }
-
     const otp = crypto.randomInt(100000, 999999).toString();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
