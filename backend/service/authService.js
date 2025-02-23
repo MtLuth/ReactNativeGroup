@@ -59,7 +59,31 @@ class authService {
       message: "Xác thực OTP thành công! Tài khoản đã được kích hoạt.",
     };
   }
+  async resendOtp(email) {
+    const user = await User.findOne({ email });
 
+    if (!user) {
+      throw new Error("Người dùng không tồn tại!");
+    }
+
+    if (user.isVerified) {
+      throw new Error("Tài khoản đã xác thực trước đó!");
+    }
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    await sendOTP(email, otp);
+
+    return {
+      success: true,
+      message: "Mã OTP mới đã được gửi vào email của bạn!",
+    };
+  }
   async login(email, password) {
     const user = await User.findOne({ email });
     if (!user) {

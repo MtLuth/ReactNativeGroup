@@ -27,7 +27,16 @@ class AuthController {
       token: loginResponse.token,
     });
   });
+  resendOtp = catchAsync(async (req, res, next) => {
+    const { email } = req.body;
 
+    const response = await authService.resendOtp(email);
+
+    res.status(200).json({
+      status: "success",
+      message: response.message,
+    });
+  });
   verifyOtp = catchAsync(async (req, res, next) => {
     const { email, otp } = req.body;
 
