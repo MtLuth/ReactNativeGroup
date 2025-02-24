@@ -13,12 +13,13 @@ class UserController {
 
   editProfile = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    const { fullName, email, phoneNumber } = req.body;
+    const { fullName, email, phoneNumber, avatar } = req.body;
 
     const updateResponse = await userService.editProfile(
       fullName,
       email,
       phoneNumber,
+      avatar,
       id
     );
     res.status(200).json({
