@@ -80,7 +80,7 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
         console.log('UserId:', userId);
 
         try {
-          const response = await axios.get(`api/v1/auth/${userId}`);
+          const response = await axios.get(`api/v1/user/${userId}`);
           const user = response.data?.message;
           console.log('User Info:', user);
           setCurrentUser(user);
@@ -96,6 +96,11 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
     }
   };
 
+  const logout = async () => {
+    await AsyncStorage.removeItem('assetToken');
+    navigation.replace('Auth');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -106,7 +111,7 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
         <TouchableOpacity>
           <Icon name="bell" type="font-awesome" color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={logout}>
           <Image
             source={{
               uri: currentUser?.avatar,
