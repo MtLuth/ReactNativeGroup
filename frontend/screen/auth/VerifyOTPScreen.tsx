@@ -1,16 +1,16 @@
+import axios from 'axios';
 import React, {useState} from 'react';
 import {
-  View,
+  Alert,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Alert,
+  View,
 } from 'react-native';
-import axios, {isAxiosError} from 'axios';
 import {showErrorMessage, showSuccessMessage} from '../../utils/ToastMessage';
 
-axios.defaults.baseURL = 'http://192.168.1.138:8080/api/v1';
+axios.defaults.baseURL = 'http://10.0.2.2:8080/api/v1';
 
 const VerifyOTPScreen = ({navigation, route}) => {
   const [otp, setOtp] = useState('');

@@ -41,10 +41,6 @@ class authService {
       throw new Error("Người dùng không tồn tại!");
     }
 
-    if (user.isVerified) {
-      throw new Error("Tài khoản đã xác thực trước đó!");
-    }
-
     if (user.otp !== otp || new Date() > user.otpExpires) {
       throw new Error("Mã OTP không hợp lệ hoặc đã hết hạn!");
     }
@@ -88,10 +84,6 @@ class authService {
 
     if (!user) {
       throw new Error("Người dùng không tồn tại!");
-    }
-
-    if (user.isVerified) {
-      throw new Error("Tài khoản đã xác thực trước đó!");
     }
 
     const otp = crypto.randomInt(100000, 999999).toString();
@@ -177,6 +169,19 @@ class authService {
     }
     const { _id, email, fullName, avatar } = user;
     return { _id, email, fullName, avatar };
+  }
+
+  async resetPassword(email, newPassword) {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error("Người dùng không tồn tại!");
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    return { success: true, message: "Đặt lại mật khẩu thành công!" };
   }
 }
 

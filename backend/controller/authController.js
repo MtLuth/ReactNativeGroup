@@ -70,6 +70,14 @@ class AuthController {
       message: verificationResponse.message,
     });
   });
+
+  resetPassword = catchAsync(async (req, res, next) => {
+    const { email, password } = req.body;
+
+    const response = await authService.resetPassword(email, password);
+
+    res.status(200).json(response);
+  });
 }
 
 export default new AuthController();

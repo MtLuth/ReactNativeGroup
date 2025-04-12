@@ -9,3 +9,4 @@ authRouter.post("/verify-otp", authController.verifyOtp);
 authRouter.post("/resend-otp", authController.resendOtp);
 authRouter.post("/send-otp", authController.sendOTPVerifyEmail);
 authRouter.post("/verify/otp", authController.verifyOtpWithId);
+authRouter.put("/reset-password", authController.resetPassword);

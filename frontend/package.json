@@ -19,6 +19,7 @@
     "@react-navigation/stack": "^7.1.1",
     "@types/jsonwebtoken": "^9.0.9",
     "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
     "eventHub": "file:",
     "jwt-decode": "^4.0.0",
     "react": "18.3.1",
@@ -36,8 +37,8 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
-    "@babel/runtime": "^7.25.0",
-    "@react-native-community/cli": "latest",
+    "@babel/runtime": "^7.26.10",
+    "@react-native-community/cli": "^18.0.0",
     "@react-native-community/cli-platform-android": "15.0.1",
     "@react-native-community/cli-platform-ios": "15.0.1",
     "@react-native/babel-preset": "0.77.0",

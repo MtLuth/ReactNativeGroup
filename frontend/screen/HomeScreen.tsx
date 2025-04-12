@@ -1,21 +1,21 @@
-import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFocusEffect} from '@react-navigation/native'; // Import useFocusEffect
-import React, {useEffect, useState} from 'react';
+import axios from 'axios';
+import React, {useState} from 'react';
 import {
-  View,
-  Text,
-  TextInput,
+  FlatList,
   Image,
   ScrollView,
-  TouchableOpacity,
-  FlatList,
   StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import {Icon} from 'react-native-elements';
 import {Category} from '../models/Category';
-import {showErrorMessage, showSuccessMessage} from '../utils/ToastMessage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {User} from '../models/User';
+import {showErrorMessage, showSuccessMessage} from '../utils/ToastMessage';
 
 import {Buffer} from 'buffer';
 
@@ -26,7 +26,7 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
   const [currentUser, setCurrentUser] = useState<User>();
   const [page, setPage] = useState(1);
 
-  axios.defaults.baseURL = 'http://192.168.1.138:8080';
+  axios.defaults.baseURL = 'http://10.0.2.2:8080';
 
   useFocusEffect(
     React.useCallback(() => {

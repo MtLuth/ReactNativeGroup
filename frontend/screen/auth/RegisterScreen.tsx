@@ -9,10 +9,10 @@ const RegisterScreen = ({navigation}: {navigation: any}) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [message, setMessage] = useState('');
-
+  const baseURL = 'http://10.0.2.2:8080/api/v1';
   const handleRegister = async () => {
     try {
-      const response = await axios.post('/auth/register', {
+      const response = await axios.post(`${baseURL}/auth/register`, {
         email,
         password,
         confirmPassword,

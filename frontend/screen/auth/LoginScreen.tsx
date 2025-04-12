@@ -1,27 +1,28 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import React, {useState} from 'react';
 import {
-  View,
-  TextInput,
   Button,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {showErrorMessage, showSuccessMessage} from '../../utils/ToastMessage';
 
-axios.defaults.baseURL = 'http://192.168.1.138:8080';
+const baseURL = 'http://10.0.2.2:8080';
 
 const LoginScreen = ({navigation}: {navigation: any}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const handleLogin = async () => {
     try {
-      const response = await axios.post('/api/v1/auth/login', {
+      const response = await axios.post(`${baseURL}/api/v1/auth/login`, {
         email,
         password,
       });
+      console.log('Test login');
       const {resMessage, token} = response.data;
       showSuccessMessage(resMessage);
       await AsyncStorage.setItem('assetToken', token);
@@ -29,8 +30,9 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
       navigation.replace('Tab');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        showErrorMessage(error.response.data.error);
+        showErrorMessage(error.response.data.message);
       } else {
+        console.log(error);
         showErrorMessage('An unexpected error occurred');
       }
     }

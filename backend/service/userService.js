@@ -11,7 +11,7 @@ const validatePhoneNumber = (phoneNumber) => {
 };
 
 class UserService {
-  async editProfile(fullName, email, phoneNumber, id) {
+  async editProfile(fullName, email, phoneNumber, id, avatar) {
     const user = await User.findById(id);
     if (!user) {
       throw new Error("Người dùng không tồn tại!");
@@ -41,6 +41,7 @@ class UserService {
     user.fullName = fullName || user.fullName;
     user.email = email || user.email;
     user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.avatar = avatar || user.avatar;
     await user.save();
 
     return { success: true, message: "Cập nhật thông tin thành công!", user };
