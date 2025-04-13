@@ -166,7 +166,9 @@ const SignUpScreen = ({navigation}: {navigation: any}) => {
             />
 
             <View style={AuthStyle.actionContainer}>
-              <TouchableOpacity onPress={onSignInPress}>
+              <TouchableOpacity
+                onPress={onSignInPress}
+                style={{alignSelf: 'flex-end'}}>
                 <Text style={AuthStyle.actionText}>
                   Already have an account?
                 </Text>

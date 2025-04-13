@@ -3,15 +3,15 @@ import {View, ActivityIndicator, Image} from 'react-native';
 import {appColors} from '../themes/appColors';
 import {Style} from '../styles/style';
 import {SplashScreenStyle} from '../styles/splashScreenStyle';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getItem} from '../utils/storage';
 
 const SplashScreen = ({navigation}: {navigation: any}) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = await AsyncStorage.getItem('accessToken');
+        const token = getItem('accessToken');
         if (token) {
-          navigation.replace('Home');
+          navigation.replace('Main');
         } else {
           navigation.replace('Login');
         }

@@ -13,7 +13,7 @@ import {Style} from '../../styles/style';
 import axios from 'axios';
 import {appColors} from '../../themes/appColors';
 import {showErrorToast} from '../../utils/toast';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {setItem} from '../../utils/storage';
 
 const LoginScreen = ({navigation}: {navigation: any}) => {
   const [email, setEmail] = useState('');
@@ -46,7 +46,9 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
   };
 
   const onSingInButtonPress = async () => {
-    if (!validateInputs()) return;
+    if (!validateInputs()) {
+      return;
+    }
 
     setLoading(true);
     try {
@@ -54,10 +56,10 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
         email,
         password,
       });
-      const accessToken = response.data?.accessToken;
+      const accessToken = response.data?.token;
       if (accessToken) {
-        await AsyncStorage.setItem('accessToken', accessToken);
-        navigation.navigate('Home');
+        setItem('accessToken', accessToken);
+        navigation.navigate('Main');
       } else {
         showErrorToast('Login failed. Token not found.');
       }
@@ -109,7 +111,9 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
           error={passwordError}
         />
         <View style={AuthStyle.actionContainer}>
-          <TouchableOpacity onPress={onForgotPasswordPress}>
+          <TouchableOpacity
+            onPress={onForgotPasswordPress}
+            style={{alignSelf: 'flex-end'}}>
             <Text style={AuthStyle.actionText}>Forgot password?</Text>
           </TouchableOpacity>
         </View>

@@ -12,6 +12,7 @@ import Toast, {BaseToastProps, ToastConfig} from 'react-native-toast-message';
 import {StyleSheet, Text, View} from 'react-native';
 import {appColors} from './src/themes/appColors';
 import VerifyOTPScreen from './src/screens/auth/VerifyOTPScreen';
+import BottomTabNavigator from './src/navigations/BottomNavigation';
 
 console.log('API URL:', Config.API_URL);
 axios.defaults.baseURL = Config.API_URL;
@@ -43,7 +44,7 @@ const App = () => {
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="VerifyOTP" component={VerifyOTPScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Main" component={BottomTabNavigator} />
       </Stack.Navigator>
       <Toast position="bottom" config={toastConfig} />
     </NavigationContainer>

@@ -38,7 +38,9 @@ const ForgotPasswordScreen = ({navigation}: {navigation: any}) => {
           keyboardType="email-address"
         />
         <View style={AuthStyle.actionContainer}>
-          <TouchableOpacity onPress={onSignUpPress}>
+          <TouchableOpacity
+            onPress={onSignUpPress}
+            style={{alignSelf: 'flex-end'}}>
             <Text style={AuthStyle.actionText}>Do you have an account?</Text>
           </TouchableOpacity>
         </View>
