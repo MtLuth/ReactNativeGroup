@@ -13,6 +13,7 @@ import {Style} from '../../styles/style';
 import axios from 'axios';
 import {appColors} from '../../themes/appColors';
 import {showErrorToast} from '../../utils/toast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({navigation}: {navigation: any}) => {
   const [email, setEmail] = useState('');
@@ -45,24 +46,29 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
   };
 
   const onSingInButtonPress = async () => {
-    if (!validateInputs()) {
-      return;
-    }
+    if (!validateInputs()) return;
+
     setLoading(true);
     try {
-      console.log(axios.defaults.baseURL);
-      await axios.post('/auth/login', {
+      const response = await axios.post('/auth/login', {
         email,
         password,
       });
+      const accessToken = response.data?.accessToken;
+      if (accessToken) {
+        await AsyncStorage.setItem('accessToken', accessToken);
+        navigation.navigate('Home');
+      } else {
+        showErrorToast('Login failed. Token not found.');
+      }
       setLoading(false);
-      navigation.navigate('Home');
     } catch (error: any) {
       setLoading(false);
       if (axios.isAxiosError(error)) {
-        showErrorToast(error.response?.data.message);
+        showErrorToast(error.response?.data.message || 'Login failed');
+      } else {
+        showErrorToast('Unexpected error occurred');
       }
-      showErrorToast(error.data.message);
     }
   };
 
