@@ -10,6 +10,7 @@ import { userRouter } from "./routes/userRoute.js";
 import { mediaRouter } from "./routes/mediaRouter.js";
 import { cartRouter } from "./routes/cartRouter.js";
 import { orderRouter } from "./routes/orderRoute.js";
+import { reviewRouter } from "./routes/reviewRouter.js";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use(`${API_PATH}/user`, userRouter);
 app.use(`${API_PATH}/media`, mediaRouter);
 app.use(`${API_PATH}/cart`, cartRouter);
 app.use(`${API_PATH}/order`, orderRouter);
+app.use(`${API_PATH}/review`, reviewRouter);
 
 console.log(API_PATH);
 

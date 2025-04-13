@@ -2,7 +2,6 @@ import productService from "../service/productService.js";
 import catchAsync from "../utils/catchAsync.js";
 
 class ProductController {
-  // Lấy danh sách sản phẩm với phân trang và tìm kiếm
   getAllProducts = catchAsync(async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
