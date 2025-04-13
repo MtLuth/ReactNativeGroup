@@ -1,13 +1,20 @@
 import Product from "../model/product.js";
 
 class ProductService {
-  async getAllProducts(page = 1, limit = 6, search = "") {
+  async getAllProducts(page = 1, limit = 6, search = "", category = "") {
     try {
       const skip = (page - 1) * limit;
 
-      const query = search
-        ? { name: { $regex: search, $options: "i" } } // tìm kiếm không phân biệt hoa thường
-        : {};
+      // Xây dựng query tìm kiếm
+      const query = {};
+
+      if (search) {
+        query.name = { $regex: search, $options: "i" };
+      }
+
+      if (category) {
+        query.category = category; // Lọc theo _id của category
+      }
 
       const total = await Product.countDocuments(query);
       const products = await Product.find(query)
@@ -40,6 +47,18 @@ class ProductService {
       return newProduct;
     } catch (error) {
       throw new Error("Lỗi khi tạo sản phẩm: " + error.message);
+    }
+  }
+
+  async getProductById(productId) {
+    try {
+      const product = await Product.findById(productId);
+      if (!product) {
+        throw new Error("Không tìm thấy sản phẩm");
+      }
+      return product;
+    } catch (error) {
+      throw new Error("Lỗi khi lấy sản phẩm theo ID: " + error.message);
     }
   }
 }

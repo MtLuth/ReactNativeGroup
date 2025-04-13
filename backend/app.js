@@ -8,6 +8,7 @@ import { categoryRouter } from "./routes/categoryRoute.js";
 import { productRouter } from "./routes/productRoute.js";
 import { userRouter } from "./routes/userRoute.js";
 import { mediaRouter } from "./routes/mediaRouter.js";
+import { cartRouter } from "./routes/cartRouter.js";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(`${API_PATH}/category`, categoryRouter);
 app.use(`${API_PATH}/product`, productRouter);
 app.use(`${API_PATH}/user`, userRouter);
 app.use(`${API_PATH}/media`, mediaRouter);
+app.use(`${API_PATH}/cart`, cartRouter);
 
 console.log(API_PATH);
 

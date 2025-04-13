@@ -56,6 +56,7 @@ const HomeScreen = () => {
       setPage(1);
       setHasMore(true);
       fetchProducts(1);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   );
 
@@ -73,7 +74,7 @@ const HomeScreen = () => {
       {/* Header */}
       <View style={HomeStyle.header}>
         <TouchableOpacity>
-          <Icon name="bell" type="font-awesome" color={appColors.accent} />
+          <Icon name="filter" type="font-awesome" color={appColors.accent} />
         </TouchableOpacity>
         <TextInput
           style={HomeStyle.searchInput}

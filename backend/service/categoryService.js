@@ -10,7 +10,7 @@ class categoryService {
     }
   }
 
-  async createCategory(name, imageUrl, description) {
+  async createCategory(name, description) {
     try {
       const existingCategory = await Category.findOne({ name });
       if (existingCategory) {
@@ -19,7 +19,6 @@ class categoryService {
 
       const newCategory = new Category({
         name,
-        imageUrl,
         description,
       });
 
