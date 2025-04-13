@@ -39,9 +39,7 @@ const ForgotPasswordScreen = ({navigation}: {navigation: any}) => {
         />
         <View style={AuthStyle.actionContainer}>
           <TouchableOpacity onPress={onSignUpPress}>
-            <Text style={AuthStyle.actionText}>
-              Do you already have an account?
-            </Text>
+            <Text style={AuthStyle.actionText}>Do you have an account?</Text>
           </TouchableOpacity>
         </View>
 

@@ -1,13 +1,70 @@
 import React, {useState} from 'react';
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import InputComponent from '../../components/InputComponent';
 import {AuthStyle} from '../../styles/authStyle';
 import {Style} from '../../styles/style';
+import axios from 'axios';
+import {appColors} from '../../themes/appColors';
+import {showErrorToast} from '../../utils/toast';
 
 const LoginScreen = ({navigation}: {navigation: any}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const validateInputs = () => {
+    let valid = true;
+
+    if (!email) {
+      setEmailError('Email is required');
+      valid = false;
+    } else if (!email.includes('@')) {
+      setEmailError('Please enter a valid email');
+      valid = false;
+    } else {
+      setEmailError('');
+    }
+
+    if (!password) {
+      setPasswordError('Password is required');
+      valid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    return valid;
+  };
+
+  const onSingInButtonPress = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+    setLoading(true);
+    try {
+      console.log(axios.defaults.baseURL);
+      await axios.post('/auth/login', {
+        email,
+        password,
+      });
+      setLoading(false);
+      navigation.navigate('Home');
+    } catch (error: any) {
+      setLoading(false);
+      if (axios.isAxiosError(error)) {
+        showErrorToast(error.response?.data.message);
+      }
+      showErrorToast(error.data.message);
+    }
+  };
 
   const onSignUpPress = () => {
     navigation.navigate('SignUp');
@@ -35,6 +92,7 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          error={emailError}
         />
         <InputComponent
           label="Password"
@@ -42,6 +100,7 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          error={passwordError}
         />
         <View style={AuthStyle.actionContainer}>
           <TouchableOpacity onPress={onForgotPasswordPress}>
@@ -50,7 +109,9 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
         </View>
 
         <View style={Style.flexContainer}>
-          <TouchableOpacity style={[Style.button, Style.buttonPrimary]}>
+          <TouchableOpacity
+            style={[Style.button, Style.buttonPrimary]}
+            onPress={onSingInButtonPress}>
             <Text style={Style.buttonText}>Login</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -59,6 +120,14 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
             <Text style={Style.buttonText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
+      </View>
+
+      <View style={Style.footerContainer}>
+        {loading ? (
+          <ActivityIndicator size="large" color={appColors.primary} />
+        ) : (
+          ''
+        )}
       </View>
     </ScrollView>
   );

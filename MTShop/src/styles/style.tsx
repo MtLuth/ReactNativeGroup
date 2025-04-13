@@ -48,4 +48,11 @@ export const Style = StyleSheet.create({
   buttonSecondary: {
     backgroundColor: appColors.accent,
   },
+
+  footerContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    height: 50,
+    width: '100%',
+  },
 });

@@ -3,8 +3,8 @@ import {StyleSheet} from 'react-native';
 export const AuthStyle = StyleSheet.create({
   actionText: {
     textAlign: 'right',
-    marginTop: 4,
     marginBottom: 24,
+    marginRight: 5,
     fontSize: 13,
     color: '#888',
   },
