@@ -102,7 +102,11 @@ const OrderTrackingScreen = () => {
             color: '#6c757d',
           };
           return (
-            <View style={styles.orderItem}>
+            <TouchableOpacity
+              style={styles.orderItem}
+              onPress={() =>
+                navigation.navigate('OrderDetail', {orderId: item._id})
+              }>
               <View style={styles.orderHeader}>
                 <Text style={styles.orderId}>#{item._id.slice(-6)}</Text>
                 <Text style={[styles.status, {color: status.color}]}>
@@ -132,7 +136,7 @@ const OrderTrackingScreen = () => {
                   </Text>
                 </TouchableOpacity>
               )}
-            </View>
+            </TouchableOpacity>
           );
         }}
         ListEmptyComponent={

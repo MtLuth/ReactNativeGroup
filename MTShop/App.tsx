@@ -17,6 +17,8 @@ import CartScreen from './src/screens/cart/CartScreen';
 import OrderTrackingScreen from './src/screens/cart/OrderTrackingScreen';
 import OrderScreen from './src/screens/cart/OrderScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import OrderDetailScreen from './src/screens/order/OrderDetailScreen';
+import ReviewScreen from './src/screens/review/ReviewScreen';
 
 console.log('API URL:', Config.API_URL);
 axios.defaults.baseURL = Config.API_URL;
@@ -53,6 +55,8 @@ const App = () => {
         <Stack.Screen name="Cart" component={CartScreen} />
         <Stack.Screen name="Order" component={OrderScreen} />
         <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />
+        <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
+        <Stack.Screen name="Review" component={ReviewScreen} />
       </Stack.Navigator>
       <Toast position="bottom" config={toastConfig} />
     </NavigationContainer>

@@ -13,7 +13,7 @@ class ReviewService {
       product: productId,
       order: orderId,
     });
-    if (existing) throw new Error("You have already reviewed this product");
+    if (existing) throw new Error("Bạn đã đánh giá sản phẩm này rồi");
 
     const review = new Review({
       user: userId,
