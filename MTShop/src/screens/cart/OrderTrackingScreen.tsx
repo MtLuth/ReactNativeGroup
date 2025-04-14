@@ -50,6 +50,27 @@ const OrderTrackingScreen = () => {
       setLoading(false);
     }
   };
+  const handleCancelRequest = async (orderId: string) => {
+    try {
+      const token = getItem('accessToken');
+      if (!token) return showErrorToast('Bạn chưa đăng nhập');
+
+      await axios.post(
+        `/order/cancel-request/${orderId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      showErrorToast('Đã gửi yêu cầu huỷ đơn hàng');
+      fetchOrders();
+    } catch (error) {
+      showErrorToast('Không thể gửi yêu cầu huỷ');
+    }
+  };
 
   useEffect(() => {
     fetchOrders();
@@ -100,6 +121,17 @@ const OrderTrackingScreen = () => {
                   {item.total.toLocaleString()} VND
                 </Text>
               </Text>
+              {(item.status === 'Pending' ||
+                item.status === 'Confirmed' ||
+                item.status === 'Preparing') && (
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => handleCancelRequest(item._id)}>
+                  <Text style={styles.cancelButtonText}>
+                    Gửi yêu cầu huỷ đơn
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           );
         }}
@@ -124,6 +156,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  cancelButton: {
+    marginTop: 12,
+    backgroundColor: '#fce4e4',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#f5c6cb',
+  },
+
+  cancelButtonText: {
+    color: '#c82333',
+    fontWeight: '600',
+  },
+
   headerTitle: {
     flex: 1,
     textAlign: 'center',

@@ -1,105 +1,63 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  GestureResponderEvent,
-} from 'react-native';
+import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import {Icon} from 'react-native-elements';
 
-interface ProductCardProps {
-  image: string;
-  name: string;
-  price: number;
-  onAddToCart?: () => void;
-  onPress?: () => void;
-}
-
-const ProductCard: React.FC<ProductCardProps> = ({
-  image,
-  name,
-  price,
-  onAddToCart,
-  onPress,
-}) => {
+const ProductCard = ({image, name, price, onAddToCart, onPress}) => {
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.9}>
-      <View style={styles.card}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={{uri: image}}
-            style={styles.image}
-            resizeMode="cover"
-          />
-        </View>
-
-        <View style={styles.content}>
-          <Text style={styles.name}>{name}</Text>
-          <Text style={styles.price}>{price.toLocaleString()} VND</Text>
-        </View>
-
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.cartButton} onPress={onAddToCart}>
-            <Text style={styles.cartButtonText}>Thêm vào giỏ</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      <Image source={{uri: image}} style={styles.image} />
+      <Text style={styles.name} numberOfLines={2}>
+        {name}
+      </Text>
+      <Text style={styles.price}>{price.toLocaleString()} VND</Text>
+      <TouchableOpacity style={styles.cartButton} onPress={onAddToCart}>
+        <Icon name="shopping-cart" type="font-awesome" color="#fff" size={16} />
+        <Text style={styles.cartButtonText}> Thêm vào giỏ</Text>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 };
-
-export default ProductCard;
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    width: 180,
-    marginBottom: 16,
-    marginHorizontal: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+    padding: 12,
+    margin: 8,
+    flex: 1,
     elevation: 2,
   },
-  imageContainer: {
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    overflow: 'hidden',
-  },
   image: {
-    height: 120,
     width: '100%',
-  },
-  content: {
-    paddingHorizontal: 10,
-    paddingTop: 10,
+    height: 120,
+    borderRadius: 10,
+    resizeMode: 'cover',
+    marginBottom: 10,
   },
   name: {
-    fontWeight: '600',
-    fontSize: 15,
+    fontWeight: 'bold',
+    fontSize: 14,
+    marginBottom: 4,
     color: '#333',
   },
   price: {
-    fontSize: 16,
-    fontWeight: 'bold',
     color: '#05294B',
-    marginTop: 4,
-  },
-  footer: {
-    paddingHorizontal: 10,
-    paddingBottom: 12,
-    paddingTop: 8,
+    fontSize: 14,
+    marginBottom: 10,
   },
   cartButton: {
     backgroundColor: '#05294B',
+    flexDirection: 'row',
+    justifyContent: 'center',
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: 6,
     alignItems: 'center',
   },
   cartButtonText: {
     color: '#fff',
     fontWeight: '600',
+    fontSize: 13,
   },
 });
+
+export default ProductCard;
