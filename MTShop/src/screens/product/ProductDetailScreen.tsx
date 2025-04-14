@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import {appColors} from '../../themes/appColors';
 import {showErrorToast} from '../../utils/toast';
+import ReviewComponent from '../../components/ReviewComponent';
 
 const ProductDetailScreen = ({route}) => {
   const {id} = route.params;
@@ -68,6 +69,21 @@ const ProductDetailScreen = ({route}) => {
 
         <Text style={styles.sectionTitle}>Mô tả sản phẩm</Text>
         <Text style={styles.description}>{product.description}</Text>
+        <Text style={styles.sectionTitle}>Đánh giá sản phẩm</Text>
+        {product.reviews.length === 0 ? (
+          <Text style={styles.noReview}>Chưa có đánh giá nào.</Text>
+        ) : (
+          product.reviews.map((review: any) => (
+            <ReviewComponent
+              key={review._id}
+              avt={review.user.avatar}
+              fullName={review.user.fullName}
+              rating={review.rating}
+              comment={review.comment}
+              createdAt={review.createdAt}
+            />
+          ))
+        )}
       </View>
     </ScrollView>
   );
@@ -140,6 +156,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#555',
     lineHeight: 22,
+    marginBottom: 20,
+  },
+  noReview: {
+    fontSize: 14,
+    color: '#999',
+    fontStyle: 'italic',
     marginBottom: 20,
   },
 });

@@ -26,6 +26,12 @@ class OrderService {
     });
 
     await newOrder.save();
+
+    setTimeout(async () => {
+      newOrder.status = "Confirmed";
+      await newOrder.save();
+      console.log("Order confirmed");
+    }, 30 * 60 * 1000);
     return newOrder;
   }
 
