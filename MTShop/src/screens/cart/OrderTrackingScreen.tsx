@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 import {appColors} from '../../themes/appColors';
 import {getItem} from '../../utils/storage';
-import {showErrorToast} from '../../utils/toast';
+import {showErrorToast, showSuccessToast} from '../../utils/toast';
 import dayjs from 'dayjs';
 import {Icon} from 'react-native-elements';
 import {useNavigation} from '@react-navigation/native';
@@ -55,8 +55,8 @@ const OrderTrackingScreen = () => {
       const token = getItem('accessToken');
       if (!token) return showErrorToast('Bạn chưa đăng nhập');
 
-      await axios.post(
-        `/order/cancel-request/${orderId}`,
+      await axios.put(
+        `/order/cancel/${orderId}`,
         {},
         {
           headers: {
@@ -65,7 +65,7 @@ const OrderTrackingScreen = () => {
         },
       );
 
-      showErrorToast('Đã gửi yêu cầu huỷ đơn hàng');
+      showSuccessToast('Đã gửi yêu cầu huỷ đơn hàng');
       fetchOrders();
     } catch (error) {
       showErrorToast('Không thể gửi yêu cầu huỷ');
