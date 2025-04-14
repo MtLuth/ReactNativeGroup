@@ -105,6 +105,7 @@ const HomeScreen = () => {
       setPage(1);
       setHasMore(true);
       fetchProducts(1);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchText, category]),
   );
 
@@ -134,6 +135,9 @@ const HomeScreen = () => {
       image={item.imageUrl}
       name={item.name}
       price={item.price}
+      rating={item.averageRating}
+      reviewCount={item.totalReviews}
+      soldCount={item.totalOrders}
       onAddToCart={() => addToCart(item._id)}
       onPress={() => navigation.navigate('ProductDetail', {id: item._id})}
     />

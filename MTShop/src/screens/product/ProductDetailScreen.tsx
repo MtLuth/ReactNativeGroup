@@ -42,11 +42,33 @@ const ProductDetailScreen = ({route}) => {
   if (!product) return null;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image source={{uri: product.imageUrl}} style={styles.image} />
-      <Text style={styles.name}>{product.name}</Text>
-      <Text style={styles.price}>{product.price.toLocaleString()} VND</Text>
-      <Text style={styles.description}>{product.description}</Text>
+    <ScrollView style={styles.scrollView}>
+      <View style={styles.container}>
+        {/* Ảnh sản phẩm */}
+        <Image source={{uri: product.imageUrl}} style={styles.image} />
+
+        {/* Tên và giá */}
+        <Text style={styles.name}>{product.name}</Text>
+
+        <View style={styles.infoRow}>
+          <View style={styles.ratingContainer}>
+            <Text style={styles.ratingText}>
+              ⭐ {product.averageRating?.toFixed(1) || 0}
+            </Text>
+            <Text style={styles.reviewText}>
+              ({product.totalReviews || 0} đánh giá)
+            </Text>
+          </View>
+          <Text style={styles.soldText}>
+            Đã bán: {product.totalOrders || 0}
+          </Text>
+        </View>
+
+        <Text style={styles.price}>{product.price.toLocaleString()} VND</Text>
+
+        <Text style={styles.sectionTitle}>Mô tả sản phẩm</Text>
+        <Text style={styles.description}>{product.description}</Text>
+      </View>
     </ScrollView>
   );
 };
@@ -54,36 +76,70 @@ const ProductDetailScreen = ({route}) => {
 export default ProductDetailScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: '#fff',
-  },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  scrollView: {
+    backgroundColor: '#f5f5f5',
+  },
+  container: {
+    padding: 16,
+    backgroundColor: '#fff',
+  },
   image: {
     width: '100%',
-    height: 250,
-    borderRadius: 12,
+    height: 280,
+    borderRadius: 16,
     marginBottom: 16,
   },
   name: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 8,
   },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ratingText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFD700',
+    marginRight: 6,
+  },
+  reviewText: {
+    fontSize: 13,
+    color: '#666',
+  },
+  soldText: {
+    fontSize: 13,
+    color: '#666',
+  },
   price: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: '700',
     color: appColors.primary,
-    marginBottom: 12,
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 6,
+    color: '#333',
   },
   description: {
-    fontSize: 16,
-    color: '#444',
+    fontSize: 15,
+    color: '#555',
     lineHeight: 22,
+    marginBottom: 20,
   },
 });
