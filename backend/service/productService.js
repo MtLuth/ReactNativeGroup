@@ -1,4 +1,6 @@
+import Order from "../model/order.js";
 import Product from "../model/product.js";
+import Review from "../model/review.js";
 
 class ProductService {
   async getAllProducts(page = 1, limit = 6, search = "", category = "") {
@@ -22,12 +24,36 @@ class ProductService {
         .skip(skip)
         .limit(limit);
 
+      let results = [];
+      for (let product of products) {
+        let reviews = await Review.find({ product: product._id });
+        let totalRating = 0;
+        let totalReviews = 0;
+        reviews.forEach((review) => {
+          totalRating += review.rating;
+          totalReviews++;
+        });
+        let averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
+
+        const orders = await Order.find({
+          status: { $ne: "Canceled" },
+          "items.product": product._id,
+        });
+
+        results.push({
+          ...product._doc,
+          averageRating: averageRating,
+          totalReviews: totalReviews,
+          totalOrders: orders.length,
+        });
+      }
+
       return {
         page,
         limit,
         totalPages: Math.ceil(total / limit),
         totalItems: total,
-        products,
+        products: results,
       };
     } catch (error) {
       throw new Error("Lỗi khi lấy danh sách sản phẩm: " + error.message);

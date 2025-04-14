@@ -6,13 +6,14 @@ class ReviewController {
   addReview = catchAsync(async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array()[0] });
     }
-    const userId = req.user.id;
-    const { product, rating, comment } = req.body;
+    const { userId } = req.user;
+    const { product, order, rating, comment } = req.body;
     const review = await reviewService.addReview(
       userId,
       product,
+      order,
       rating,
       comment
     );

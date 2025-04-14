@@ -1,3 +1,4 @@
+import Review from "../model/review.js";
 import productService from "../service/productService.js";
 import catchAsync from "../utils/catchAsync.js";
 
