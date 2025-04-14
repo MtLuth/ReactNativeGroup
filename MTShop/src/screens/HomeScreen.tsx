@@ -68,18 +68,29 @@ const HomeScreen = () => {
     });
   };
 
-  const fetchProducts = async (pageNumber = 1) => {
+  const fetchProducts = async (
+    pageNumber = 1,
+    selectedCategory = category,
+    search = searchText,
+  ) => {
     if (isLoading || !hasMore) return;
     setIsLoading(true);
+
     try {
-      const res = await axios.get(`/product`, {
-        params: {
-          page: pageNumber,
-          limit,
-          search: searchText,
-          category,
-        },
-      });
+      const params: any = {
+        page: pageNumber,
+        limit,
+      };
+
+      if (selectedCategory && selectedCategory !== '1111') {
+        params.category = selectedCategory;
+      }
+
+      if (search) {
+        params.search = search;
+      }
+
+      const res = await axios.get(`/product`, {params});
       const newProducts = res.data?.data?.products || [];
 
       if (pageNumber === 1) {
@@ -226,7 +237,11 @@ const HomeScreen = () => {
                       isSelected && styles.selectedCategoryItem,
                     ]}
                     onPress={() => {
-                      setCategory(item._id);
+                      const selected = item._id;
+                      setCategory(selected);
+                      setPage(1);
+                      setHasMore(true);
+                      fetchProducts(1, selected, searchText);
                       onCloseCategoryModal();
                     }}>
                     <View style={styles.categoryRow}>
@@ -258,7 +273,6 @@ const HomeScreen = () => {
           </Animated.View>
         </View>
       </Modal>
-      {/* Product Grid */}
       <FlatList
         data={products}
         renderItem={renderItem}
