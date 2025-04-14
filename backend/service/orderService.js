@@ -63,6 +63,14 @@ class OrderService {
     await order.save();
     return order;
   }
+
+  async getOrderById(userId, orderId) {
+    const order = await Order.findOne({ _id: orderId, user: userId })
+      .populate("user", "fullName email")
+      .populate("items.product", "name price");
+    if (!order) throw new Error("Order not found");
+    return order;
+  }
 }
 
 export default new OrderService();
