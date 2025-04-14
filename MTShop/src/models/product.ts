@@ -4,4 +4,7 @@ export interface Product {
   imageUrl: string;
   category: string;
   price: number;
+  averageRating: number;
+  totalReviews: number;
+  totalOrders: number;
 }

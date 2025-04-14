@@ -25,6 +25,7 @@ class AuthController {
       status: "success",
       message: loginResponse.message,
       token: loginResponse.token,
+      role: loginResponse.role,
     });
   });
   resendOtp = catchAsync(async (req, res, next) => {

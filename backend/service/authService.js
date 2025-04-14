@@ -146,7 +146,12 @@ class authService {
       }
     );
 
-    return { success: true, message: "Đăng nhập thành công!", token };
+    return {
+      success: true,
+      message: "Đăng nhập thành công!",
+      token,
+      role: user.role ? user.role : "user",
+    };
   }
 
   async editProfile(fullName, email) {

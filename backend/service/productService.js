@@ -82,6 +82,25 @@ class ProductService {
       if (!product) {
         throw new Error("Không tìm thấy sản phẩm");
       }
+      const reviews = await Review.find({ product: productId }).populate(
+        "user",
+        "fullName avatar"
+      );
+      let totalRating = 0;
+      let totalReviews = 0;
+      reviews.forEach((review) => {
+        totalRating += review.rating;
+        totalReviews++;
+      });
+      let averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
+      const orders = await Order.find({
+        status: { $ne: "Canceled" },
+        "items.product": productId,
+      });
+      product._doc.averageRating = averageRating;
+      product._doc.totalReviews = totalReviews;
+      product._doc.totalOrders = orders.length;
+      product._doc.reviews = reviews;
       return product;
     } catch (error) {
       throw new Error("Lỗi khi lấy sản phẩm theo ID: " + error.message);

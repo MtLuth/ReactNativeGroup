@@ -9,7 +9,7 @@ export const HomeStyle = StyleSheet.create({
     justifyContent: 'space-between',
   },
   header: {
-    padding: 8,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
