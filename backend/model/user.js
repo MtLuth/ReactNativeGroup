@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFCzxivJXCZk0Kk8HsHujTO3Olx0ngytPrWw&s",
   },
   phoneNumber: { type: String, unique: true },
+  role: String,
 });
 
 const User = mongoose.model("User", userSchema);

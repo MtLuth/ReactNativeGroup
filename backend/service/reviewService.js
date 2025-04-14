@@ -1,17 +1,24 @@
 import Review from "../model/review.js";
 import Product from "../model/product.js";
+import Order from "../model/order.js";
 
 class ReviewService {
-  async addReview(userId, productId, rating, comment) {
-    const product = await Product.findById(productId);
-    if (!product) throw new Error("Product not found");
+  async addReview(userId, productId, orderId, rating, comment) {
+    const order = await Order.findById(orderId);
+    if (!order) throw new Error("Order not found");
+    if (order.status !== "Completed") throw new Error("Order not completed");
 
-    const existing = await Review.findOne({ user: userId, product: productId });
+    const existing = await Review.findOne({
+      user: userId,
+      product: productId,
+      order: orderId,
+    });
     if (existing) throw new Error("You have already reviewed this product");
 
     const review = new Review({
       user: userId,
       product: productId,
+      order: orderId,
       rating,
       comment,
     });

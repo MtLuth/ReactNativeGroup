@@ -21,8 +21,8 @@ class OrderController {
   });
 
   cancelOrder = catchAsync(async (req, res, next) => {
-    const orderId = req.params.orderId;
-    const userId = req.user.id;
+    const orderId = req.params.id;
+    const userId = req.user.userId;
     const canceledOrder = await orderService.cancelOrder(orderId, userId);
     res.status(200).json({ status: "success", data: canceledOrder });
   });
@@ -36,6 +36,13 @@ class OrderController {
     const { status } = req.body;
     const updatedOrder = await orderService.updateOrderStatus(orderId, status);
     res.status(200).json({ status: "success", data: updatedOrder });
+  });
+
+  getOrderById = catchAsync(async (req, res, next) => {
+    const orderId = req.params.id;
+    const userId = req.user.userId;
+    const order = await orderService.getOrderById(userId, orderId);
+    res.status(200).json({ status: "success", data: order });
   });
 }
 

@@ -14,4 +14,7 @@ orderRouter
 
 orderRouter
   .route("/:id")
-  .put(updateOrderStatusValidator, orderController.updateOrderStatus);
+  .put(updateOrderStatusValidator, orderController.updateOrderStatus)
+  .get(verifyUser, orderController.getOrderById);
+
+orderRouter.route("/cancel/:id").put(verifyUser, orderController.cancelOrder);

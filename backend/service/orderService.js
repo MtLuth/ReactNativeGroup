@@ -48,7 +48,7 @@ class OrderService {
 
     const diffMins = (Date.now() - order.createdAt.getTime()) / (1000 * 60);
     if (diffMins > 30 || order.status !== "Pending") {
-      throw new Error("Cannot cancel order at this stage");
+      throw new Error("Đơn hàng đã quá thời gian hủy hoặc không thể hủy");
     }
 
     order.status = "Canceled";
@@ -61,6 +61,14 @@ class OrderService {
     if (!order) throw new Error("Order not found");
     order.status = status;
     await order.save();
+    return order;
+  }
+
+  async getOrderById(userId, orderId) {
+    const order = await Order.findOne({ _id: orderId, user: userId })
+      .populate("user", "fullName email")
+      .populate("items.product", "name price");
+    if (!order) throw new Error("Order not found");
     return order;
   }
 }
