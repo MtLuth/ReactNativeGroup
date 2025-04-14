@@ -12,7 +12,6 @@ export const HomeStyle = StyleSheet.create({
     padding: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 40,
     marginBottom: 8,
     backgroundColor: appColors.primary,
   },

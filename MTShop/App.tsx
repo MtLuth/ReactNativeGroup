@@ -12,6 +12,10 @@ import {StyleSheet, Text, View} from 'react-native';
 import {appColors} from './src/themes/appColors';
 import VerifyOTPScreen from './src/screens/auth/VerifyOTPScreen';
 import BottomTabNavigator from './src/navigations/BottomNavigation';
+import ProductDetailScreen from './src/screens/product/ProductDetailScreen';
+import CartScreen from './src/screens/cart/CartScreen';
+import OrderTrackingScreen from './src/screens/cart/OrderTrackingScreen';
+import OrderScreen from './src/screens/cart/OrderScreen';
 
 console.log('API URL:', Config.API_URL);
 axios.defaults.baseURL = Config.API_URL;
@@ -44,6 +48,10 @@ const App = () => {
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="VerifyOTP" component={VerifyOTPScreen} />
         <Stack.Screen name="Main" component={BottomTabNavigator} />
+        <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+        <Stack.Screen name="Cart" component={CartScreen} />
+        <Stack.Screen name="Order" component={OrderScreen} />
+        <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />
       </Stack.Navigator>
       <Toast position="bottom" config={toastConfig} />
     </NavigationContainer>

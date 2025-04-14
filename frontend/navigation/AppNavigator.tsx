@@ -5,13 +5,13 @@ import {OnboardScreen, SplashScreen} from '../screen';
 import TabNavigator from './TabNavigator';
 import AuthNavigator from './AuthNavigator';
 import Toast from 'react-native-toast-message';
-
 export type RootStackParamList = {
   Splash: undefined;
   Home: undefined;
   Auth: undefined;
   Onboard: undefined;
   Tab: undefined;
+  ProductDetail: {productId: string};
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
