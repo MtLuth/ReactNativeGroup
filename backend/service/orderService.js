@@ -48,7 +48,7 @@ class OrderService {
 
     const diffMins = (Date.now() - order.createdAt.getTime()) / (1000 * 60);
     if (diffMins > 30 || order.status !== "Pending") {
-      throw new Error("Cannot cancel order at this stage");
+      throw new Error("Đơn hàng đã quá thời gian hủy hoặc không thể hủy");
     }
 
     order.status = "Canceled";
