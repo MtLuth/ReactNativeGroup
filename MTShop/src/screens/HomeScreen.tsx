@@ -12,7 +12,7 @@ import {
   Modal,
 } from 'react-native';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {Icon} from 'react-native-elements';
+import {Icon, Image} from 'react-native-elements';
 import axios from 'axios';
 import {Style} from '../styles/style';
 import {HomeStyle} from '../styles/homeStyle';
@@ -123,6 +123,7 @@ const HomeScreen = () => {
       );
 
       showSuccessToast('Đã thêm vào giỏ hàng');
+      await fetchCartCount();
     } catch (error) {
       showErrorToast('Lỗi khi thêm vào giỏ hàng' + error);
     }
@@ -163,7 +164,6 @@ const HomeScreen = () => {
   );
   return (
     <View style={Style.container}>
-      {/* Header */}
       <View style={HomeStyle.header}>
         <TouchableOpacity onPress={onOpenCategoryModal}>
           <Icon name="filter" type="font-awesome" color={appColors.accent} />
@@ -201,7 +201,6 @@ const HomeScreen = () => {
           )}
         </TouchableOpacity>
       </View>
-
       {/* Modal Animated */}
       <Modal visible={showModal} transparent animationType="none">
         <View style={styles.modalOverlay}>
@@ -255,7 +254,6 @@ const HomeScreen = () => {
           </Animated.View>
         </View>
       </Modal>
-
       {/* Product Grid */}
       <FlatList
         data={products}
@@ -267,6 +265,15 @@ const HomeScreen = () => {
         onEndReached={() => fetchProducts(page)}
         onEndReachedThreshold={1}
         showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <Image
+            source={{
+              uri: 'https://i.ibb.co/1G2Y1Bkb/online-shopping-web-banner-template-design-flat-design-style-online-shopping-web-banner-vector-illus.jpg',
+            }}
+            style={styles.banner}
+            resizeMode="cover"
+          />
+        }
         ListFooterComponent={
           isLoading ? (
             <View style={styles.loading}>
@@ -286,6 +293,14 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
   },
+  banner: {
+    width: '100%',
+    height: 160,
+    marginBottom: 12,
+    borderRadius: 10,
+    marginTop: 8,
+  },
+
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
