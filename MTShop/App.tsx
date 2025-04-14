@@ -16,6 +16,7 @@ import ProductDetailScreen from './src/screens/product/ProductDetailScreen';
 import CartScreen from './src/screens/cart/CartScreen';
 import OrderTrackingScreen from './src/screens/cart/OrderTrackingScreen';
 import OrderScreen from './src/screens/cart/OrderScreen';
+import HomeScreen from './src/screens/HomeScreen';
 
 console.log('API URL:', Config.API_URL);
 axios.defaults.baseURL = Config.API_URL;

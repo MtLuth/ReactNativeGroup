@@ -68,7 +68,12 @@ const ProfileScreen = ({navigation}: {navigation: any}) => {
       </View>
 
       <View style={styles.optionList}>
-        <OptionItem icon="list" label="Đơn mua" />
+        <OptionItem
+          icon="list"
+          label="Đơn mua"
+          onPress={() => navigation.navigate('OrderTracking')}
+        />
+
         <OptionItem icon="question-circle" label="Trung tâm hỗ trợ" />
         <OptionItem
           icon="sign-out"
