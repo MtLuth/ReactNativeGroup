@@ -216,7 +216,6 @@ const HomeScreen = () => {
           )}
         </TouchableOpacity>
       </View>
-      {/* Modal Animated */}
       <Modal visible={showModal} transparent animationType="none">
         <View style={styles.modalOverlay}>
           <Animated.View
