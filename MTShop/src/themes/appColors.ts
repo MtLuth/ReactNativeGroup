@@ -6,6 +6,7 @@ export const appColors = {
   cardBackground: '#FFFFFF',
   textPrimary: '#1E272E',
   textSecondary: '#485460',
+  textInactive: '#D1D4DE',
   success: '#33D9B2',
   warning: '#FFC312',
   error: '#EA2027',

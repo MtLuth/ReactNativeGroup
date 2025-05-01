@@ -16,9 +16,9 @@ import ProductDetailScreen from './src/screens/product/ProductDetailScreen';
 import CartScreen from './src/screens/cart/CartScreen';
 import OrderTrackingScreen from './src/screens/cart/OrderTrackingScreen';
 import OrderScreen from './src/screens/cart/OrderScreen';
-import HomeScreen from './src/screens/HomeScreen';
 import OrderDetailScreen from './src/screens/order/OrderDetailScreen';
 import ReviewScreen from './src/screens/review/ReviewScreen';
+import Onboarding from './src/screens/Onboarding';
 
 console.log('API URL:', Config.API_URL);
 axios.defaults.baseURL = Config.API_URL;
@@ -46,6 +46,7 @@ const App = () => {
         initialRouteName="Splash"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="Onboarding" component={Onboarding} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />

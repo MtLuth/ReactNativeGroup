@@ -2,8 +2,8 @@ import {StyleSheet} from 'react-native';
 
 export const SplashScreenStyle = StyleSheet.create({
   logo: {
-    width: 200,
-    height: 200,
+    width: 372,
+    height: 300,
     borderRadius: 25,
   },
   splashContainer: {
