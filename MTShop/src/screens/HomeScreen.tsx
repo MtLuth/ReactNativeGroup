@@ -155,7 +155,7 @@ const HomeScreen = () => {
   );
   const fetchCartCount = async () => {
     try {
-      const token = await getItem('accessToken');
+      const token = getItem('accessToken');
       if (!token) return;
 
       const res = await axios.get('/cart', {
