@@ -1,0 +1,7 @@
+D:\ReactNative\Week2\android\app\.cxx\Debug\5s6yj3c5\x86\rngesturehandler_codegen_autolinked_build\CMakeFiles\react_codegen_rngesturehandler_codegen.dir\react\renderer\components\rngesturehandler_codegen\ComponentDescriptors.cpp.o
+D:\ReactNative\Week2\android\app\.cxx\Debug\5s6yj3c5\x86\rngesturehandler_codegen_autolinked_build\CMakeFiles\react_codegen_rngesturehandler_codegen.dir\react\renderer\components\rngesturehandler_codegen\EventEmitters.cpp.o
+D:\ReactNative\Week2\android\app\.cxx\Debug\5s6yj3c5\x86\rngesturehandler_codegen_autolinked_build\CMakeFiles\react_codegen_rngesturehandler_codegen.dir\react\renderer\components\rngesturehandler_codegen\Props.cpp.o
+D:\ReactNative\Week2\android\app\.cxx\Debug\5s6yj3c5\x86\rngesturehandler_codegen_autolinked_build\CMakeFiles\react_codegen_rngesturehandler_codegen.dir\react\renderer\components\rngesturehandler_codegen\ShadowNodes.cpp.o
+D:\ReactNative\Week2\android\app\.cxx\Debug\5s6yj3c5\x86\rngesturehandler_codegen_autolinked_build\CMakeFiles\react_codegen_rngesturehandler_codegen.dir\react\renderer\components\rngesturehandler_codegen\States.cpp.o
+D:\ReactNative\Week2\android\app\.cxx\Debug\5s6yj3c5\x86\rngesturehandler_codegen_autolinked_build\CMakeFiles\react_codegen_rngesturehandler_codegen.dir\react\renderer\components\rngesturehandler_codegen\rngesturehandler_codegenJSI-generated.cpp.o
+D:\ReactNative\Week2\android\app\.cxx\Debug\5s6yj3c5\x86\rngesturehandler_codegen_autolinked_build\CMakeFiles\react_codegen_rngesturehandler_codegen.dir\rngesturehandler_codegen-generated.cpp.o

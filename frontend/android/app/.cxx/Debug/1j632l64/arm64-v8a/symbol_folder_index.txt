@@ -1,0 +1,1 @@
+D:\UdemyCrashCourse\React-Native\eventHub\frontend\android\app\build\intermediates\cxx\Debug\1j632l64\obj\arm64-v8a

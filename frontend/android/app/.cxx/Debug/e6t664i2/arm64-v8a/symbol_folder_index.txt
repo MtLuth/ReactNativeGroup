@@ -1,0 +1,1 @@
+D:\eventHub\frontend\android\app\build\intermediates\cxx\Debug\e6t664i2\obj\arm64-v8a

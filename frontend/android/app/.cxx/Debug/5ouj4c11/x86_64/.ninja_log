@@ -1,0 +1,5 @@
+# ninja log v5
+2	35	0	D:/UdemyCrashCourse/MyLearningReactNative/AwesomeProject/android/app/.cxx/Debug/5ouj4c11/x86_64/CMakeFiles/cmake.verify_globs	ca9b49a62be0cfb2
+3	2375	7610264458220055	CMakeFiles/appmodules.dir/56aaf97b0bef762d1188d74fdaac5e89/AwesomeProject/android/app/build/generated/autolinking/src/main/jni/autolinking.cpp.o	fb34a985368728c2
+0	2587	7610264460354137	CMakeFiles/appmodules.dir/OnLoad.cpp.o	e40dcb36f54d5244
+2587	2708	7610264461630020	D:/UdemyCrashCourse/MyLearningReactNative/AwesomeProject/android/app/build/intermediates/cxx/Debug/5ouj4c11/obj/x86_64/libappmodules.so	3970e0f3a15b912

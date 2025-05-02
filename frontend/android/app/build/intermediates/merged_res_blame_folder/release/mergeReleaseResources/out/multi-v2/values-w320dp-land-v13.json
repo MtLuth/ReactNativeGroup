@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.eventhub.app-mergeReleaseResources-41:/values-w320dp-land-v13/values-w320dp-land-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\litch\\.gradle\\caches\\8.10.2\\transforms\\b3ecd227dabad18734a9b69ebafed374\\transformed\\material-1.6.1\\res\\values-w320dp-land-v13\\values-w320dp-land-v13.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,110",
+                        "endColumns": "54,61",
+                        "endOffsets": "105,167"
+                    }
+                }
+            ]
+        }
+    ]
+}
