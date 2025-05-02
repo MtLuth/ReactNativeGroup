@@ -1,1 +1,0 @@
-D:\eventHub\frontend\android\app\build\intermediates\cxx\RelWithDebInfo\73w4d1v1\obj\x86
