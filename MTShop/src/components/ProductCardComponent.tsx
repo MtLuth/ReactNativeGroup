@@ -20,7 +20,6 @@ const ProductCard = ({
         {name}
       </Text>
 
-      {/* Đánh giá & số lượt mua */}
       <View style={styles.infoRow}>
         <View style={styles.ratingContainer}>
           <Icon name="star" type="font-awesome" size={12} color="#FFD700" />

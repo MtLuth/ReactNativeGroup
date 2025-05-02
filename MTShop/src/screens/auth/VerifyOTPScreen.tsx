@@ -1,17 +1,17 @@
+import axios from 'axios';
 import React, {useState} from 'react';
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   Text,
-  View,
   TouchableOpacity,
-  ActivityIndicator,
+  View,
 } from 'react-native';
-import {Style} from '../../styles/style';
-import {AuthStyle} from '../../styles/authStyle';
-import axios from 'axios';
-import {showErrorToast, showSuccessToast} from '../../utils/toast';
 import InputComponent from '../../components/InputComponent';
+import {AuthStyle} from '../../styles/authStyle';
+import {Style} from '../../styles/style';
+import {showErrorToast, showSuccessToast} from '../../utils/toast';
 
 const VerifyOTPScreen = ({
   route,
@@ -54,7 +54,7 @@ const VerifyOTPScreen = ({
     <ScrollView style={Style.container} keyboardShouldPersistTaps="handled">
       <View style={Style.headerContainer}>
         <Image
-          source={require('../../assets/logo.png')}
+          source={require('../../assets/images/logo.png')}
           resizeMode="cover"
           style={Style.logo}
         />

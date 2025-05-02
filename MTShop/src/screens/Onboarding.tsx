@@ -19,19 +19,19 @@ const slides = [
     id: 1,
     title: 'Chọn sản phẩm yêu thích',
     description: 'Chọn lựa dễ dàng – mua sắm thông minh.',
-    image: require('../assets/onboarding-1.png'),
+    image: require('../assets/images/onboarding1.png'),
   },
   {
     id: 2,
     title: 'Thanh toán',
     description: 'Thanh toán nhanh chóng, an toàn và tiện lợi.',
-    image: require('../assets/onboarding-2.png'),
+    image: require('../assets/images/onboarding2.png'),
   },
   {
     id: 3,
     title: 'Nhận hàng',
     description: 'Theo dõi đơn hàng dễ dàng.',
-    image: require('../assets/onboarding-3.png'),
+    image: require('../assets/images/onboarding3.png'),
   },
 ];
 
@@ -93,7 +93,10 @@ const Onboarding = ({navigation}: {navigation: any}) => {
       />
 
       <View style={styles.footer}>
-        <TouchableOpacity onPress={handlePrev} disabled={currentIndex === 0}>
+        <TouchableOpacity
+          onPress={handlePrev}
+          disabled={currentIndex === 0}
+          style={styles.prevTouch}>
           {currentIndex > 0 ? (
             <GlobalText style={styles.actionText}>Trước</GlobalText>
           ) : (
@@ -170,7 +173,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  indicatorContainer: {flexDirection: 'row', gap: 8},
+  indicatorContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 24,
+    justifyContent: 'center',
+  },
   dot: {
     width: 8,
     height: 8,
@@ -192,5 +204,8 @@ const styles = StyleSheet.create({
   },
   pageNumberActive: {
     color: appColors.primary,
+  },
+  prevTouch: {
+    width: 54,
   },
 });

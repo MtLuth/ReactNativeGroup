@@ -14,6 +14,8 @@ import axios from 'axios';
 import {appColors} from '../../themes/appColors';
 import {showErrorToast} from '../../utils/toast';
 import {setItem} from '../../utils/storage';
+import AuthMainContainerComponent from '../../components/AuthMainContainerComponent';
+import AuthButton from '../../components/buttons/AuthButton';
 
 const LoginScreen = ({navigation}: {navigation: any}) => {
   const [email, setEmail] = useState('');
@@ -83,30 +85,21 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
   };
 
   return (
-    <ScrollView style={Style.container}>
-      <View style={Style.headerContainer}>
-        <Image
-          source={require('../../assets/logo.png')}
-          resizeMode="cover"
-          style={Style.logo}
-        />
-      </View>
-
+    <AuthMainContainerComponent title="Welcome Back!">
       <View style={AuthStyle.containerSecondary}>
-        <Text style={Style.title}>Login</Text>
         <InputComponent
-          label="Email"
-          placeholder="Enter your email"
+          placeholder="Email"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          leftIcon={<Image source={require('../../assets/images/user.png')} />}
           error={emailError}
         />
         <InputComponent
-          label="Password"
-          placeholder="Enter your password"
+          placeholder="Password"
           value={password}
           onChangeText={setPassword}
+          leftIcon={<Image source={require('../../assets/images/lock.png')} />}
           secureTextEntry
           error={passwordError}
         />
@@ -114,21 +107,26 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
           <TouchableOpacity
             onPress={onForgotPasswordPress}
             style={{alignSelf: 'flex-end'}}>
-            <Text style={AuthStyle.actionText}>Forgot password?</Text>
+            <Text style={AuthStyle.actionText}>Quên mật khẩu?</Text>
           </TouchableOpacity>
         </View>
 
         <View style={Style.flexContainer}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[Style.button, Style.buttonPrimary]}
             onPress={onSingInButtonPress}>
             <Text style={Style.buttonText}>Login</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[Style.button, Style.buttonSecondary]}
-            onPress={onSignUpPress}>
-            <Text style={Style.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+          <AuthButton text="Đăng nhập" onPress={onSingInButtonPress} />
+          <View style={AuthStyle.subActionContainer}>
+            <Text style={AuthStyle.subActionText}>Bạn chưa có tài khoản?</Text>
+            <TouchableOpacity onPress={onSignUpPress}>
+              <Text
+                style={[AuthStyle.subActionText, AuthStyle.textTouchOpacity]}>
+                Đăng ký
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -139,7 +137,7 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
           ''
         )}
       </View>
-    </ScrollView>
+    </AuthMainContainerComponent>
   );
 };
 

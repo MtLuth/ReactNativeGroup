@@ -16,6 +16,7 @@ import {AuthStyle} from '../../styles/authStyle';
 import {Style} from '../../styles/style';
 import axios from 'axios';
 import {showErrorToast} from '../../utils/toast';
+import AuthMainContainerComponent from '../../components/AuthMainContainerComponent';
 
 const SignUpScreen = ({navigation}: {navigation: any}) => {
   const [fullName, setFullName] = useState('');
@@ -104,65 +105,70 @@ const SignUpScreen = ({navigation}: {navigation: any}) => {
         style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
-        <ScrollView
-          style={Style.container}
-          contentContainerStyle={{flexGrow: 1}}
-          keyboardShouldPersistTaps="handled">
-          <View style={Style.headerContainer}>
-            <Image
-              source={require('../../assets/logo.png')}
-              resizeMode="cover"
-              style={Style.logo}
-            />
-          </View>
+        <AuthMainContainerComponent title="Create an account">
           <View style={AuthStyle.containerSecondary}>
-            <Text style={Style.title}>Sign Up</Text>
-
             <InputComponent
-              label="Full Name"
-              placeholder="Enter your full name"
-              value={fullName}
-              onChangeText={value => {
-                setFullName(value);
-                setNameError('');
-              }}
-              error={nameError}
-            />
-
-            <InputComponent
-              label="Email"
-              placeholder="Enter your email"
+              placeholder="Email"
               value={email}
               onChangeText={value => {
                 setEmail(value);
                 setEmailError('');
               }}
+              leftIcon={
+                <Image source={require('../../assets/images/user.png')} />
+              }
               keyboardType="email-address"
               error={emailError}
             />
 
             <InputComponent
-              label="Password"
-              placeholder="Enter your password"
+              placeholder="Full Name"
+              value={fullName}
+              onChangeText={value => {
+                setFullName(value);
+                setNameError('');
+              }}
+              leftIcon={
+                <Image source={require('../../assets/images/id-card.png')} />
+              }
+              error={nameError}
+            />
+
+            <InputComponent
+              placeholder="Password"
               value={password}
               onChangeText={value => {
                 setPassword(value);
                 setPasswordError('');
               }}
               secureTextEntry
+              leftIcon={
+                <Image source={require('../../assets/images/lock.png')} />
+              }
               error={passwordError}
             />
 
             <InputComponent
-              label="Confirm Password"
-              placeholder="Confirm your password"
+              placeholder="Confirm password"
               value={confirmPassword}
               onChangeText={value => {
                 setConfirmPassword(value);
                 setConfirmPasswordError('');
               }}
               secureTextEntry
+              leftIcon={
+                <Image source={require('../../assets/images/lock.png')} />
+              }
               error={confirmPasswordError}
+            />
+            <InputComponent
+              placeholder="Phone number"
+              value={''}
+              onChangeText={() => {}}
+              leftIcon={
+                <Image source={require('../../assets/images/phone.png')} />
+              }
+              keyboardType="phone-pad"
             />
 
             <View style={AuthStyle.actionContainer}>
@@ -188,7 +194,7 @@ const SignUpScreen = ({navigation}: {navigation: any}) => {
               </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>
+        </AuthMainContainerComponent>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );

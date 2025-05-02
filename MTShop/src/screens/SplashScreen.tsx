@@ -16,13 +16,12 @@ const SplashScreen = ({navigation}: {navigation: any}) => {
         setItem('isFirstLaunch', 'true');
         return;
       }
-      navigation.replace('Onboarding');
-      // const token = getItem('accessToken');
-      // if (token) {
-      //   navigation.replace('Home');
-      // } else {
-      //   navigation.replace('Login');
-      // }
+      const token = getItem('accessToken');
+      if (token) {
+        navigation.replace('Home');
+      } else {
+        navigation.replace('Login');
+      }
     };
 
     setTimeout(() => {
@@ -33,7 +32,7 @@ const SplashScreen = ({navigation}: {navigation: any}) => {
   return (
     <View style={[Style.container, SplashScreenStyle.splashContainer]}>
       <Image
-        source={require('../assets/logo.png')}
+        source={require('../assets/images/logo.png')}
         resizeMode="contain"
         style={SplashScreenStyle.logo}
       />

@@ -40,7 +40,7 @@ export const Style = StyleSheet.create({
   flexContainer: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 24,
+    gap: 40,
   },
   buttonPrimary: {
     backgroundColor: appColors.primary,

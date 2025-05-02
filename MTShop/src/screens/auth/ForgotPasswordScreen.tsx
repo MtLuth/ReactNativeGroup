@@ -22,7 +22,7 @@ const ForgotPasswordScreen = ({navigation}: {navigation: any}) => {
     <ScrollView style={Style.container}>
       <View style={Style.headerContainer}>
         <Image
-          source={require('../../assets/logo.png')}
+          source={require('../../assets/images/logo.png')}
           resizeMode="cover"
           style={Style.logo}
         />
@@ -31,7 +31,6 @@ const ForgotPasswordScreen = ({navigation}: {navigation: any}) => {
       <View style={AuthStyle.containerSecondary}>
         <Text style={Style.title}>Login</Text>
         <InputComponent
-          label="Email"
           placeholder="Enter your email"
           value={email}
           onChangeText={setEmail}

@@ -13,4 +13,6 @@ export const appColors = {
   border: '#D1D8E0',
   white: '#FFFFFF',
   black: '#000000',
+  inputIcon: '#626262',
+  inputBackground: '#f3f3f3',
 };
