@@ -18,7 +18,7 @@ const SplashScreen = ({navigation}: {navigation: any}) => {
       }
       const token = getItem('accessToken');
       if (token) {
-        navigation.replace('Home');
+        navigation.replace('Main');
       } else {
         navigation.replace('Login');
       }

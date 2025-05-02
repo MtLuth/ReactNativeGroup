@@ -1,17 +1,11 @@
 import axios from 'axios';
 import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {View} from 'react-native';
+import AuthButton from '../../components/buttons/AuthButton';
+import AuthMainContainerComponent from '../../components/container/AuthMainContainerComponent';
 import InputComponent from '../../components/InputComponent';
 import {AuthStyle} from '../../styles/authStyle';
-import {Style} from '../../styles/style';
-import {showErrorToast, showSuccessToast} from '../../utils/toast';
+import {showErrorToast} from '../../utils/toast';
 
 const VerifyOTPScreen = ({
   route,
@@ -20,11 +14,12 @@ const VerifyOTPScreen = ({
   route: any;
   navigation: any;
 }) => {
-  const {email} = route.params;
+  const {email, prevAction} = route.params;
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
 
   const onVerifyOtp = async () => {
+    console.log('Previous action:', prevAction);
     if (!otp.trim()) {
       showErrorToast('Please enter OTP');
       return;
@@ -32,14 +27,17 @@ const VerifyOTPScreen = ({
 
     setLoading(true);
     try {
-      const res = await axios.post('/auth/verify-otp', {
+      await axios.post('/auth/verify-otp', {
         email,
         otp,
       });
 
       setLoading(false);
-      showSuccessToast(res.data.message || 'Verification successful!');
-      navigation.navigate('Login');
+      if (prevAction === 'forgotPassword') {
+        navigation.navigate('ResetPassword', {email});
+      } else {
+        navigation.navigate('Login');
+      }
     } catch (error: any) {
       setLoading(false);
       if (axios.isAxiosError(error)) {
@@ -51,39 +49,24 @@ const VerifyOTPScreen = ({
   };
 
   return (
-    <ScrollView style={Style.container} keyboardShouldPersistTaps="handled">
-      <View style={Style.headerContainer}>
-        <Image
-          source={require('../../assets/images/logo.png')}
-          resizeMode="cover"
-          style={Style.logo}
-        />
-      </View>
-
+    <AuthMainContainerComponent title="Verify OTP">
       <View style={AuthStyle.containerSecondary}>
-        <Text style={Style.title}>Verify OTP</Text>
-
         <InputComponent
-          label="OTP"
           placeholder="Enter OTP"
           value={otp}
           onChangeText={setOtp}
           keyboardType="number-pad"
           autoCapitalize="none"
+          leftIcon={'key'}
         />
 
-        <TouchableOpacity
-          style={[Style.button, Style.buttonPrimary, {marginTop: 20}]}
+        <AuthButton
+          text="Xác thực OTP"
           onPress={onVerifyOtp}
-          disabled={loading}>
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={Style.buttonText}>Verify</Text>
-          )}
-        </TouchableOpacity>
+          loading={loading}
+        />
       </View>
-    </ScrollView>
+    </AuthMainContainerComponent>
   );
 };
 

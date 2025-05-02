@@ -101,8 +101,8 @@ class authService {
     };
   }
 
-  async sendOTPVerifyEmail(id, email) {
-    const user = await User.findById(id);
+  async sendOTPVerifyEmail(email) {
+    const user = await User.findOne({ email });
 
     if (!user) {
       throw new Error("Người dùng không tồn tại!");

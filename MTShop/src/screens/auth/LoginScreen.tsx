@@ -1,21 +1,13 @@
+import axios from 'axios';
 import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {ScrollView} from 'react-native-gesture-handler';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
+import AuthButton from '../../components/buttons/AuthButton';
+import AuthMainContainerComponent from '../../components/container/AuthMainContainerComponent';
 import InputComponent from '../../components/InputComponent';
 import {AuthStyle} from '../../styles/authStyle';
 import {Style} from '../../styles/style';
-import axios from 'axios';
-import {appColors} from '../../themes/appColors';
-import {showErrorToast} from '../../utils/toast';
 import {setItem} from '../../utils/storage';
-import AuthMainContainerComponent from '../../components/AuthMainContainerComponent';
-import AuthButton from '../../components/buttons/AuthButton';
+import {showErrorToast} from '../../utils/toast';
 
 const LoginScreen = ({navigation}: {navigation: any}) => {
   const [email, setEmail] = useState('');
@@ -28,17 +20,17 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
     let valid = true;
 
     if (!email) {
-      setEmailError('Email is required');
+      setEmailError('Vui lòng nhập email');
       valid = false;
     } else if (!email.includes('@')) {
-      setEmailError('Please enter a valid email');
+      setEmailError('Enmail không hợp lệ');
       valid = false;
     } else {
       setEmailError('');
     }
 
     if (!password) {
-      setPasswordError('Password is required');
+      setPasswordError('Vui lòng nhập mật khẩu');
       valid = false;
     } else {
       setPasswordError('');
@@ -63,15 +55,15 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
         setItem('accessToken', accessToken);
         navigation.navigate('Main');
       } else {
-        showErrorToast('Login failed. Token not found.');
+        showErrorToast('Đăng nhập thất bại');
       }
       setLoading(false);
     } catch (error: any) {
       setLoading(false);
       if (axios.isAxiosError(error)) {
-        showErrorToast(error.response?.data.message || 'Login failed');
+        showErrorToast(error.response?.data.message || 'Đăng nhập thất bại');
       } else {
-        showErrorToast('Unexpected error occurred');
+        showErrorToast('Lỗi không xác định');
       }
     }
   };
@@ -96,7 +88,7 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
           error={emailError}
         />
         <InputComponent
-          placeholder="Password"
+          placeholder="Mật khẩu"
           value={password}
           onChangeText={setPassword}
           leftIcon={<Image source={require('../../assets/images/lock.png')} />}
@@ -112,12 +104,11 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
         </View>
 
         <View style={Style.flexContainer}>
-          {/* <TouchableOpacity
-            style={[Style.button, Style.buttonPrimary]}
-            onPress={onSingInButtonPress}>
-            <Text style={Style.buttonText}>Login</Text>
-          </TouchableOpacity> */}
-          <AuthButton text="Đăng nhập" onPress={onSingInButtonPress} />
+          <AuthButton
+            text="Đăng nhập"
+            onPress={onSingInButtonPress}
+            loading={loading}
+          />
           <View style={AuthStyle.subActionContainer}>
             <Text style={AuthStyle.subActionText}>Bạn chưa có tài khoản?</Text>
             <TouchableOpacity onPress={onSignUpPress}>
@@ -128,14 +119,6 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-
-      <View style={Style.footerContainer}>
-        {loading ? (
-          <ActivityIndicator size="large" color={appColors.primary} />
-        ) : (
-          ''
-        )}
       </View>
     </AuthMainContainerComponent>
   );

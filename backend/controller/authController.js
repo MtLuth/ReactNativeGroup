@@ -42,7 +42,7 @@ class AuthController {
   sendOTPVerifyEmail = catchAsync(async (req, res, next) => {
     const { id, email } = req.body;
 
-    const response = await authService.sendOTPVerifyEmail(id, email);
+    const response = await authService.sendOTPVerifyEmail(email);
 
     res.status(200).json({
       status: "success",

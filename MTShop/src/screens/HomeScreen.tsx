@@ -21,6 +21,7 @@ import ProductCard from '../components/ProductCardComponent';
 import {showErrorToast, showSuccessToast} from '../utils/toast';
 import {Product} from '../models/product';
 import {getItem} from '../utils/storage';
+import AppMainContainer from '../components/container/AppMainContainer';
 
 const {height} = Dimensions.get('window');
 
@@ -178,8 +179,8 @@ const HomeScreen = () => {
     }, []),
   );
   return (
-    <View style={Style.container}>
-      <View style={HomeStyle.header}>
+    <AppMainContainer>
+      {/* <View style={HomeStyle.header}>
         <TouchableOpacity onPress={onOpenCategoryModal}>
           <Icon name="filter" type="font-awesome" color={appColors.accent} />
         </TouchableOpacity>
@@ -215,7 +216,7 @@ const HomeScreen = () => {
             </View>
           )}
         </TouchableOpacity>
-      </View>
+      </View> */}
       {/* Modal Animated */}
       <Modal visible={showModal} transparent animationType="none">
         <View style={styles.modalOverlay}>
@@ -300,7 +301,7 @@ const HomeScreen = () => {
           ) : null
         }
       />
-    </View>
+    </AppMainContainer>
   );
 };
 

@@ -10,6 +10,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {appColors} from '../themes/appColors';
 import {appFonts} from '../themes/appFont';
+import {Text} from 'react-native-elements';
 
 interface InputComponentProps extends TextInputProps {
   error?: string;
@@ -64,14 +65,17 @@ const InputComponent: React.FC<InputComponentProps> = ({
   };
 
   return (
-    <View style={[styles.inputWrapper, error && styles.inputError]}>
-      {renderLeftIcon()}
-      <TextInput
-        style={styles.input}
-        secureTextEntry={secureTextEntry && !isPasswordVisible}
-        {...props}
-      />
-      {renderRightIcon()}
+    <View>
+      <View style={[styles.inputWrapper, error && styles.inputError]}>
+        {renderLeftIcon()}
+        <TextInput
+          style={styles.input}
+          secureTextEntry={secureTextEntry && !isPasswordVisible}
+          {...props}
+        />
+        {renderRightIcon()}
+      </View>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
   );
 };
@@ -111,6 +115,14 @@ const styles = StyleSheet.create({
   },
   inputError: {
     borderColor: appColors.error,
+  },
+  errorText: {
+    color: appColors.error,
+    fontSize: 13,
+    marginTop: -10,
+    marginBottom: 8,
+    marginLeft: 5,
+    fontFamily: appFonts.MontserratRegular,
   },
 });
 

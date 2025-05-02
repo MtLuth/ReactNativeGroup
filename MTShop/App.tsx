@@ -19,6 +19,7 @@ import OrderScreen from './src/screens/cart/OrderScreen';
 import OrderDetailScreen from './src/screens/order/OrderDetailScreen';
 import ReviewScreen from './src/screens/review/ReviewScreen';
 import Onboarding from './src/screens/Onboarding';
+import ResetPasswordScreen from './src/screens/auth/ResetPasswordScreen';
 
 console.log('API URL:', Config.API_URL);
 axios.defaults.baseURL = Config.API_URL;
@@ -49,6 +50,7 @@ const App = () => {
         <Stack.Screen name="Onboarding" component={Onboarding} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="VerifyOTP" component={VerifyOTPScreen} />
         <Stack.Screen name="Main" component={BottomTabNavigator} />

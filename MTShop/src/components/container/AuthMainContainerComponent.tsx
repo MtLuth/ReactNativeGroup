@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import {appColors} from '../themes/appColors';
-import {appFonts} from '../themes/appFont';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {appColors} from '../../themes/appColors';
+import {appFonts} from '../../themes/appFont';
 
 interface AuthMainContainerProps {
   title: string;
@@ -16,7 +16,9 @@ const AuthMainContainerComponent: React.FC<AuthMainContainerProps> = ({
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title} numberOfLines={2}>
+          {title}
+        </Text>
       </View>
       <View style={styles.content}>{children}</View>
     </ScrollView>
@@ -47,6 +49,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   titleContainer: {
-    width: 192,
+    width: 250,
   },
 });
