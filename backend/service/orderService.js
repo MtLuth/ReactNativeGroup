@@ -1,81 +1,139 @@
 import Order from "../model/order.js";
 import Product from "../model/product.js";
+import notificationService from "./notificationService.js";
 
 class OrderService {
   async createOrder(userId, items, address) {
-    let total = 0;
-    const enrichedItems = [];
+    try {
+      let total = 0;
+      const enrichedItems = [];
 
-    for (const item of items) {
-      const product = await Product.findById(item.product);
-      if (!product) throw new Error("Product not found");
-      const itemTotal = product.price * item.quantity;
-      total += itemTotal;
-      enrichedItems.push({
-        product: item.product,
-        quantity: item.quantity,
-        price: product.price,
+      for (const item of items) {
+        const product = await Product.findById(item.product);
+        if (!product) throw new Error("Product not found");
+        const itemTotal = product.price * item.quantity;
+        total += itemTotal;
+        enrichedItems.push({
+          product: item.product,
+          quantity: item.quantity,
+          price: product.price,
+        });
+      }
+
+      const newOrder = new Order({
+        user: userId,
+        items: enrichedItems,
+        address,
+        total,
       });
-    }
 
-    const newOrder = new Order({
-      user: userId,
-      items: enrichedItems,
-      address,
-      total,
-    });
-
-    await newOrder.save();
-
-    setTimeout(async () => {
-      newOrder.status = "Confirmed";
       await newOrder.save();
-      console.log("Order confirmed");
-    }, 30 * 60 * 1000);
-    return newOrder;
+
+      await notificationService.create(
+          userId,
+          "Bạn đã đặt hàng thành công!",
+          "ORDER_PLACED"
+      );
+
+      setTimeout(async () => {
+        try {
+          newOrder.status = "Confirmed";
+          await newOrder.save();
+          console.log("Order confirmed");
+        } catch (err) {
+          console.error("Lỗi khi xác nhận đơn hàng sau 30 phút:", err);
+        }
+      }, 30 * 60 * 1000);
+
+      return newOrder;
+    } catch (err) {
+      console.error("Lỗi trong createOrder:", err);
+      throw err;
+    }
   }
 
   async getOrderById(id) {
-    const order = await Order.findById(id)
-      .populate("user")
-      .populate("items.product");
-    if (!order) throw new Error("Order not found");
-    return order;
+    try {
+      const order = await Order.findById(id)
+          .populate("user")
+          .populate("items.product");
+      if (!order) throw new Error("Order not found");
+      return order;
+    } catch (err) {
+      console.error("Lỗi trong getOrderById:", err);
+      throw err;
+    }
   }
 
   async getOrdersByUser(userId) {
-    console.log(userId);
-    return await Order.find({ user: userId }).sort({ createdAt: -1 });
+    try {
+      return await Order.find({ user: userId }).sort({ createdAt: -1 });
+    } catch (err) {
+      console.error("Lỗi trong getOrdersByUser:", err);
+      throw err;
+    }
   }
 
   async cancelOrder(orderId, userId) {
-    const order = await Order.findOne({ _id: orderId, user: userId });
-    if (!order) throw new Error("Order not found");
+    try {
+      const order = await Order.findOne({ _id: orderId, user: userId });
+      if (!order) throw new Error("Order not found");
 
-    const diffMins = (Date.now() - order.createdAt.getTime()) / (1000 * 60);
-    if (diffMins > 30 || order.status !== "Pending") {
-      throw new Error("Đơn hàng đã quá thời gian hủy hoặc không thể hủy");
+      const diffMins = (Date.now() - order.createdAt.getTime()) / (1000 * 60);
+      if (diffMins > 30 || order.status !== "Pending") {
+        throw new Error("Đơn hàng đã quá thời gian hủy hoặc không thể hủy");
+      }
+
+      order.status = "Canceled";
+      await order.save();
+
+      await notificationService.create(
+          userId,
+          "Đơn hàng của bạn đã bị hủy.",
+          "ORDER_CANCELED"
+      );
+
+      return order;
+    } catch (err) {
+      console.error("Lỗi trong cancelOrder:", err);
+      throw err;
     }
-
-    order.status = "Canceled";
-    await order.save();
-    return order;
   }
 
   async updateOrderStatus(orderId, status) {
-    const order = await Order.findById(orderId);
-    if (!order) throw new Error("Order not found");
-    order.status = status;
-    await order.save();
-    return order;
+    try {
+      const order = await Order.findById(orderId);
+      if (!order) throw new Error("Order not found");
+
+      order.status = status;
+      await order.save();
+
+      if (status === "Delivered") {
+        await notificationService.create(
+            order.user,
+            "Đơn hàng của bạn đã giao thành công!",
+            "ORDER_DELIVERED"
+        );
+      }
+
+      return order;
+    } catch (err) {
+      console.error("Lỗi trong updateOrderStatus:", err);
+      throw err;
+    }
   }
 
   async getOrderById(userId, orderId) {
-    const order = await Order.findOne({ _id: orderId, user: userId })
-      .populate("user", "fullName email")
-      .populate("items.product", "name price");
-    if (!order) throw new Error("Order not found");
-    return order;
+    try {
+      const order = await Order.findOne({ _id: orderId, user: userId })
+          .populate("user", "fullName email")
+          .populate("items.product", "name price");
+      if (!order) throw new Error("Order not found");
+      return order;
+    } catch (err) {
+      console.error("Lỗi trong getOrderById (user-specific):", err);
+      throw err;
+    }
   }
 }
 

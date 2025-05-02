@@ -51,8 +51,10 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
         password,
       });
       const accessToken = response.data?.token;
+      const userRole    = response.data?.role;
       if (accessToken) {
         setItem('accessToken', accessToken);
+        setItem('role', userRole);
         navigation.navigate('Main');
       } else {
         showErrorToast('Đăng nhập thất bại');

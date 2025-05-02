@@ -22,7 +22,6 @@ class ProductController {
     });
   });
 
-  // Tạo sản phẩm mới
   createProduct = catchAsync(async (req, res, next) => {
     const { name, price, imageUrl, description, category } = req.body;
 
@@ -50,6 +49,19 @@ class ProductController {
       status: "success",
       data: product,
     });
+  });
+
+
+  updateProduct = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const updated = await productService.updateProduct(id, req.body);
+    res.status(200).json({ status: 'success', data: updated });
+  });
+
+  deleteProduct = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    await productService.deleteProduct(id);
+    res.status(204).json({ status: 'success', data: null });
   });
 }
 

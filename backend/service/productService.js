@@ -1,7 +1,7 @@
 import Order from "../model/order.js";
 import Product from "../model/product.js";
 import Review from "../model/review.js";
-
+import mongoose from 'mongoose';
 class ProductService {
   async getAllProducts(page = 1, limit = 6, search = "", category = "") {
     try {
@@ -104,6 +104,40 @@ class ProductService {
       return product;
     } catch (error) {
       throw new Error("Lỗi khi lấy sản phẩm theo ID: " + error.message);
+    }
+  }
+  async updateProduct(id, payload) {
+    const updated = await Product.findByIdAndUpdate(id, payload, {
+      new: true,
+      runValidators: true,
+    });
+    if (!updated) throw new Error('Không tìm thấy sản phẩm để cập nhật');
+    return updated;
+  }
+
+  async deleteProduct(id) {
+    const session = await mongoose.startSession();
+    try {
+      session.startTransaction();
+
+      const removed = await Product.findByIdAndDelete(id, { session });
+      if (!removed) throw new Error('Không tìm thấy sản phẩm để xoá');
+
+      await Review.deleteMany({ product: id }).session(session);
+
+      await Order.updateMany(
+          { 'items.product': id },
+          { $pull: { items: { product: id } } },
+          { session },
+      );
+
+      await session.commitTransaction();
+      return removed;
+    } catch (err) {
+      await session.abortTransaction();
+      throw new Error('Lỗi khi xoá sản phẩm: ' + err.message);
+    } finally {
+      session.endSession();
     }
   }
 }

@@ -13,3 +13,15 @@ export const getItem = (key: string) => {
 export const removeItem = (key: string) => {
   storage.delete(key);
 };
+
+export const decodeJWT = (token) => {
+  try {
+    const payloadBase64 = token.split('.')[1];
+    const payloadDecoded = atob(payloadBase64);
+    return JSON.parse(payloadDecoded);
+  } catch (err) {
+    console.error("Lỗi khi decode token:", err);
+    return null;
+  }
+};
+

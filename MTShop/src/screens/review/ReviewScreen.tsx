@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import {useRoute, useNavigation} from '@react-navigation/native';
 import {Icon} from 'react-native-elements';
@@ -33,7 +32,7 @@ const ReviewScreen = () => {
       setSubmitting(true);
       const token = await getItem('accessToken');
       await axios.post(
-        'http://10.0.2.2:8080/api/v1/review', // nếu chưa config baseURL
+        'http://10.0.2.2:8080/api/v1/review',
         {
           product: productId,
           order: orderId,
@@ -85,7 +84,7 @@ const ReviewScreen = () => {
         style={styles.textInput}
         value={comment}
         onChangeText={setComment}
-        placeholder="Hãy chia sẻ cảm nhận của bạn về sản phẩm"
+        placeholder="Hãy chia sẻ cảm nhận Fcủa bạn về sản phẩm"
         multiline
         numberOfLines={4}
       />
