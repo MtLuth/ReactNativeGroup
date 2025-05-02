@@ -20,7 +20,8 @@ import OrderDetailScreen from './src/screens/order/OrderDetailScreen';
 import ReviewScreen from './src/screens/review/ReviewScreen';
 import Onboarding from './src/screens/Onboarding';
 import ResetPasswordScreen from './src/screens/auth/ResetPasswordScreen';
-import AdminTabSlide from "./src/screens/dashboard/navigation/AdminTabSlide.tsx";
+import AdminTabSlide from './src/screens/dashboard/navigation/AdminTabSlide.tsx';
+import ProductFilterScreen from './src/screens/product/ProductFilterScreen.tsx';
 
 console.log('API URL:', Config.API_URL);
 axios.defaults.baseURL = Config.API_URL;
@@ -56,6 +57,7 @@ const App = () => {
         <Stack.Screen name="VerifyOTP" component={VerifyOTPScreen} />
         <Stack.Screen name="Main" component={BottomTabNavigator} />
         <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+        <Stack.Screen name="ProductFilter" component={ProductFilterScreen} />
         <Stack.Screen name="Cart" component={CartScreen} />
         <Stack.Screen name="Order" component={OrderScreen} />
         <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />

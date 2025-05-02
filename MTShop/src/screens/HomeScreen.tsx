@@ -10,9 +10,10 @@ import {
   Animated,
   Dimensions,
   Modal,
+  Image,
 } from 'react-native';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {Icon, Image} from 'react-native-elements';
+import {Icon, SearchBar} from 'react-native-elements';
 import axios from 'axios';
 import {Style} from '../styles/style';
 import {HomeStyle} from '../styles/homeStyle';
@@ -22,6 +23,12 @@ import {showErrorToast, showSuccessToast} from '../utils/toast';
 import {Product} from '../models/product';
 import {getItem} from '../utils/storage';
 import AppMainContainer from '../components/container/AppMainContainer';
+import SmallIconButton from '../components/buttons/SmallIconButton';
+import {appFonts} from '../themes/appFont';
+import HorizontalSlideContainer from '../components/container/HorizontalSlideContainer';
+import {Category} from '../models/category';
+import BannerComponent from '../components/BannerComponent';
+import MTShopSearchBar from '../components/input/SearchBarComponent';
 
 const {height} = Dimensions.get('window');
 
@@ -32,7 +39,6 @@ const HomeScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [searchText, setSearchText] = useState('');
   const [category, setCategory] = useState('');
   const modalAnim = useRef(new Animated.Value(height)).current;
   const navigation = useNavigation<any>();
@@ -43,38 +49,23 @@ const HomeScreen = () => {
   const fetchCategories = async () => {
     try {
       const res = await axios.get('/category');
-      setCategories([{_id: '', name: 'Tất cả'}, ...res.data.data]);
+      console.log(res);
+      setCategories([{_id: '', name: 'Tất cả'}, ...res.data.data.categories]);
     } catch (error) {
-      showErrorToast('Không thể tải danh mục');
+      if (axios.isAxiosError(error)) {
+        showErrorToast('Lỗi khi tải danh mục: ' + error?.response?.data);
+      }
     }
-  };
-
-  const onOpenCategoryModal = () => {
-    fetchCategories();
-    setShowModal(true);
-    Animated.timing(modalAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const onCloseCategoryModal = () => {
-    Animated.timing(modalAnim, {
-      toValue: height,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      setShowModal(false);
-    });
   };
 
   const fetchProducts = async (
     pageNumber = 1,
     selectedCategory = category,
-    search = searchText,
+    search = '',
   ) => {
-    if (isLoading || !hasMore) return;
+    if (isLoading || !hasMore) {
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -112,13 +103,33 @@ const HomeScreen = () => {
     }
   };
 
+  const onOpenCategoryModal = () => {
+    fetchCategories();
+    setShowModal(true);
+    Animated.timing(modalAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const onCloseCategoryModal = () => {
+    Animated.timing(modalAnim, {
+      toValue: height,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowModal(false);
+    });
+  };
+
   useFocusEffect(
     useCallback(() => {
       setPage(1);
       setHasMore(true);
       fetchProducts(1);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchText, category]),
+      fetchCategories();
+    }, [category]),
   );
 
   const addToCart = async (productId: string) => {
@@ -154,6 +165,7 @@ const HomeScreen = () => {
       onPress={() => navigation.navigate('ProductDetail', {id: item._id})}
     />
   );
+
   const fetchCartCount = async () => {
     try {
       const token = getItem('accessToken');
@@ -173,6 +185,41 @@ const HomeScreen = () => {
     }
   };
 
+  const handleSearch = (text: string) => {
+    navigation.navigate('ProductFilter', {
+      searchText: text,
+    });
+  };
+
+  const renderFeaturedItem = ({item}: {item: Category}) => (
+    <TouchableOpacity
+      onPress={() => {
+        setCategory(item._id);
+        setPage(1);
+        setHasMore(true);
+        fetchProducts(1, item._id, searchText);
+      }}>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 5,
+        }}>
+        <Image
+          source={{uri: item.imageUrl}}
+          style={{width: 64, height: 64, borderRadius: 32}}
+        />
+        <Text
+          style={{
+            fontFamily: appFonts.MontserratSemiBold,
+          }}>
+          {item.name}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   useFocusEffect(
     useCallback(() => {
       fetchCartCount();
@@ -180,44 +227,6 @@ const HomeScreen = () => {
   );
   return (
     <AppMainContainer>
-      {/* <View style={HomeStyle.header}>
-        <TouchableOpacity onPress={onOpenCategoryModal}>
-          <Icon name="filter" type="font-awesome" color={appColors.accent} />
-        </TouchableOpacity>
-        <TextInput
-          style={HomeStyle.searchInput}
-          placeholder="Tìm tên sản phẩm..."
-          value={searchText}
-          onChangeText={setSearchText}
-        />
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Cart')}
-          style={{padding: 5}}>
-          <Icon
-            name="shopping-cart"
-            type="font-awesome"
-            color={appColors.accent}
-            size={24}
-          />
-          {cartCount > 0 && (
-            <View
-              style={{
-                position: 'absolute',
-                right: -6,
-                top: -4,
-                backgroundColor: 'red',
-                borderRadius: 10,
-                paddingHorizontal: 6,
-                paddingVertical: 2,
-              }}>
-              <Text style={{color: '#fff', fontSize: 12, fontWeight: 'bold'}}>
-                {cartCount}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View> */}
-      {/* Modal Animated */}
       <Modal visible={showModal} transparent animationType="none">
         <View style={styles.modalOverlay}>
           <Animated.View
@@ -285,13 +294,73 @@ const HomeScreen = () => {
         onEndReachedThreshold={1}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <Image
-            source={{
-              uri: 'https://i.ibb.co/1G2Y1Bkb/online-shopping-web-banner-template-design-flat-design-style-online-shopping-web-banner-vector-illus.jpg',
-            }}
-            style={styles.banner}
-            resizeMode="cover"
-          />
+          <View>
+            <MTShopSearchBar onSubmit={handleSearch} />
+            <View style={styles.flexRowJustifyBetween}>
+              <View>
+                <Text
+                  style={{
+                    fontFamily: appFonts.MontserratBold,
+                    fontSize: 24,
+                    color: appColors.primary,
+                  }}>
+                  All Featured
+                </Text>
+              </View>
+              <View style={styles.flexRow}>
+                <SmallIconButton
+                  text="Sắp xếp"
+                  onPress={() => navigation.navigate('Cart')}
+                  icon={
+                    <Icon
+                      name="swap-vertical"
+                      type="ionicon"
+                      color="#000"
+                      size={16}
+                    />
+                  }
+                  disabled={false}
+                />
+                <SmallIconButton
+                  text="Lọc"
+                  onPress={onOpenCategoryModal}
+                  icon={
+                    <Icon name="filter" type="feather" color="#000" size={16} />
+                  }
+                  disabled={false}
+                />
+              </View>
+            </View>
+            <View
+              style={{
+                marginTop: 10,
+              }}>
+              <HorizontalSlideContainer
+                data={categories.slice(1)}
+                keyExtractor={item => item._id}
+                renderItem={renderFeaturedItem}
+                containerStyle={{
+                  backgroundColor: appColors.white,
+                }}
+                horizontalSpacing={20}
+              />
+            </View>
+            <Image
+              source={{
+                uri: 'https://i.ibb.co/1G2Y1Bkb/online-shopping-web-banner-template-design-flat-design-style-online-shopping-web-banner-vector-illus.jpg',
+              }}
+              style={styles.banner}
+              resizeMode="cover"
+            />
+            <BannerComponent
+              image="https://cdn.shopify.com/s/files/1/0661/9630/7113/files/summer-sale-banner.png?v=1661763842"
+              title="Best Sellers"
+              subtitle="Hottest Items in Store"
+              onPress={() =>
+                navigation.navigate('ProductFilter', {context: 'best-sellers'})
+              }
+            />
+          </View>
         }
         ListFooterComponent={
           isLoading ? (
@@ -317,7 +386,7 @@ const styles = StyleSheet.create({
     height: 160,
     marginBottom: 12,
     borderRadius: 10,
-    marginTop: 8,
+    marginTop: 16,
   },
 
   modalOverlay: {
@@ -371,5 +440,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginRight: 14,
+  },
+  flexRowJustifyBetween: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  flexRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
   },
 });

@@ -37,6 +37,9 @@ const NotificationsScreen = () => {
 
       setNotifications(res.data.data);
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.error('Error fetching notifications:', err.response?.data);
+      }
       showErrorToast('Không thể tải thông báo');
     } finally {
       setLoading(false);
@@ -67,49 +70,49 @@ const NotificationsScreen = () => {
   const renderItem = ({item}) => {
     const icon = getIconByType(item.type);
     return (
-        <View style={styles.card}>
-          <Icon
-              name={icon.name}
-              type="font-awesome"
-              color={icon.color}
-              size={20}
-              containerStyle={styles.icon}
-          />
-          <View style={styles.textContent}>
-            <Text style={styles.message}>{item.message}</Text>
-            <Text style={styles.timestamp}>
-              {new Date(item.createdAt).toLocaleString()}
-            </Text>
-          </View>
+      <View style={styles.card}>
+        <Icon
+          name={icon.name}
+          type="font-awesome"
+          color={icon.color}
+          size={20}
+          containerStyle={styles.icon}
+        />
+        <View style={styles.textContent}>
+          <Text style={styles.message}>{item.message}</Text>
+          <Text style={styles.timestamp}>
+            {new Date(item.createdAt).toLocaleString()}
+          </Text>
         </View>
+      </View>
     );
   };
 
   return (
-      <View style={{flex: 1}}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-              onPress={() => navigation.navigate('Main', {screen: 'Home'})}>
-            <Icon name="arrow-left" type="font-awesome" color="#333" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Thông báo</Text>
-          <View style={{width: 24}} />
-        </View>
-
-        {loading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#2f80ed" />
-            </View>
-        ) : (
-            <FlatList
-                data={notifications}
-                keyExtractor={item => item._id}
-                renderItem={renderItem}
-                contentContainerStyle={styles.container}
-            />
-        )}
+    <View style={{flex: 1}}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Main', {screen: 'Home'})}>
+          <Icon name="arrow-left" type="font-awesome" color="#333" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Thông báo</Text>
+        <View style={{width: 24}} />
       </View>
+
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2f80ed" />
+        </View>
+      ) : (
+        <FlatList
+          data={notifications}
+          keyExtractor={item => item._id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.container}
+        />
+      )}
+    </View>
   );
 };
 

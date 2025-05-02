@@ -15,10 +15,14 @@ interface Props {
 }
 
 const AppMainContainer: React.FC<Props> = ({children}) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   const handleBack = () => {
     navigation.goBack();
+  };
+
+  const onProfilePress = () => {
+    navigation.navigate('Profile');
   };
 
   return (
@@ -31,7 +35,7 @@ const AppMainContainer: React.FC<Props> = ({children}) => {
           source={require('../../assets/images/logo.png')}
           style={styles.logoImage}
         />
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onProfilePress}>
           <Image
             source={require('../../assets/images/user.png')}
             style={styles.avatar}
