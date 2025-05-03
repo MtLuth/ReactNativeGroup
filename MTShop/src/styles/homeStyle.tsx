@@ -11,6 +11,7 @@ export const HomeStyle = StyleSheet.create({
   },
   header: {
     padding: 16,
+    paddingTop: 50,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,

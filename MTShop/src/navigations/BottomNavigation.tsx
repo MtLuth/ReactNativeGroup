@@ -12,6 +12,7 @@ import IconWithBadge from '../components/icons/IconWithBadge.tsx';
 import {useBadgeCount} from '../hooks/useBadgeCountHooks.ts';
 import {showSuccessToast} from '../utils/toast.tsx';
 import {useCart} from '../context/CartContext.tsx';
+import OrderTrackingScreen from '../screens/order/OrderTrackingScreen.tsx';
 
 const Tab = createBottomTabNavigator();
 
@@ -74,6 +75,9 @@ export default function BottomTabNavigator() {
               iconName="shopping-cart"
               iconType="feather"
               badgeCount={cartCount}
+              iconStyle={{
+                marginLeft: -2,
+              }}
             />
           ),
           tabBarButton: props => <CustomTabBarButton {...props} />,
@@ -83,7 +87,7 @@ export default function BottomTabNavigator() {
 
       <Tab.Screen
         name="OrderHistory"
-        component={CartScreen}
+        component={OrderTrackingScreen}
         options={{
           title: 'Đơn hàng',
           tabBarLabel: 'Đơn hàng',

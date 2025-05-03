@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import {useRoute, useNavigation} from '@react-navigation/native';
 import {Icon} from 'react-native-elements';
@@ -12,15 +13,19 @@ import axios, {isAxiosError} from 'axios';
 import {getItem} from '../../utils/storage';
 import {showErrorToast, showSuccessToast} from '../../utils/toast';
 import {appColors} from '../../themes/appColors';
+import AppMainContainer from '../../components/container/AppMainContainer';
+import {appFonts} from '../../themes/appFont';
+import AuthButton from '../../components/buttons/AuthButton';
 
 const ReviewScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const {productId, orderId} = route.params;
 
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const {productId, orderId, productName, productImage} =
+    route.params || ({} as any);
 
   const submitReview = async () => {
     if (!comment.trim()) {
@@ -32,7 +37,7 @@ const ReviewScreen = () => {
       setSubmitting(true);
       const token = await getItem('accessToken');
       await axios.post(
-        'http://10.0.2.2:8080/api/v1/review',
+        '/review',
         {
           product: productId,
           order: orderId,
@@ -61,43 +66,47 @@ const ReviewScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Đánh giá sản phẩm</Text>
+    <AppMainContainer
+      mainTitle="Đánh giá sản phẩm"
+      isShowingBackButton={true}
+      isShowRightIcon={false}>
+      <View style={styles.container}>
+        <View style={styles.productInfo}>
+          <Image source={{uri: productImage}} style={styles.productImage} />
+          <Text style={styles.productName}>{productName}</Text>
+        </View>
+        <Text style={styles.label}>Chọn số sao:</Text>
+        <View style={styles.stars}>
+          {[1, 2, 3, 4, 5].map(star => (
+            <TouchableOpacity key={star} onPress={() => setRating(star)}>
+              <Icon
+                name="star"
+                type="font-awesome"
+                size={28}
+                color={star <= rating ? '#FFD700' : '#ccc'}
+                style={{marginHorizontal: 4}}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      <Text style={styles.label}>Chọn số sao:</Text>
-      <View style={styles.stars}>
-        {[1, 2, 3, 4, 5].map(star => (
-          <TouchableOpacity key={star} onPress={() => setRating(star)}>
-            <Icon
-              name="star"
-              type="font-awesome"
-              size={28}
-              color={star <= rating ? '#FFD700' : '#ccc'}
-              style={{marginHorizontal: 4}}
-            />
-          </TouchableOpacity>
-        ))}
+        <Text style={styles.label}>Nhận xét của bạn:</Text>
+        <TextInput
+          style={styles.textInput}
+          value={comment}
+          onChangeText={setComment}
+          placeholder="Hãy chia sẻ cảm nhận của bạn về sản phẩm"
+          multiline
+          numberOfLines={4}
+        />
+
+        <AuthButton
+          text="Gửi đánh giá"
+          onPress={submitReview}
+          loading={submitting}
+        />
       </View>
-
-      <Text style={styles.label}>Nhận xét của bạn:</Text>
-      <TextInput
-        style={styles.textInput}
-        value={comment}
-        onChangeText={setComment}
-        placeholder="Hãy chia sẻ cảm nhận Fcủa bạn về sản phẩm"
-        multiline
-        numberOfLines={4}
-      />
-
-      <TouchableOpacity
-        style={styles.submitButton}
-        onPress={submitReview}
-        disabled={submitting}>
-        <Text style={styles.submitText}>
-          {submitting ? 'Đang gửi...' : 'Gửi đánh giá'}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    </AppMainContainer>
   );
 };
 
@@ -118,7 +127,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 6,
-    color: '#333',
+    color: appColors.textPrimary,
+    fontFamily: appFonts.MontserratBold,
   },
   stars: {
     flexDirection: 'row',
@@ -132,6 +142,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     marginBottom: 20,
+    fontFamily: appFonts.MontserratRegular,
   },
   submitButton: {
     backgroundColor: appColors.primary,
@@ -143,5 +154,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     fontSize: 16,
+  },
+  productInfo: {
+    marginBottom: 20,
+  },
+  productImage: {
+    width: '100%',
+    height: 240,
+    resizeMode: 'cover',
+    borderRadius: 0,
+  },
+  productName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: appColors.textPrimary,
+    fontFamily: appFonts.MontserratBold,
+    paddingTop: 10,
   },
 });

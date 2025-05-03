@@ -202,7 +202,6 @@ const OrderScreen = ({route, navigation}: any) => {
               </Text>
             </View>
 
-            {/* New Inputs for Name and Phone */}
             <TextInput
               style={styles.input}
               placeholder="Nhập tên người nhận"

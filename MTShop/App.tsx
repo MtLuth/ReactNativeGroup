@@ -14,8 +14,8 @@ import VerifyOTPScreen from './src/screens/auth/VerifyOTPScreen';
 import BottomTabNavigator from './src/navigations/BottomNavigation';
 import ProductDetailScreen from './src/screens/product/ProductDetailScreen';
 import CartScreen from './src/screens/cart/CartScreen';
-import OrderTrackingScreen from './src/screens/cart/OrderTrackingScreen';
-import OrderScreen from './src/screens/cart/OrderScreen';
+import OrderTrackingScreen from './src/screens/order/OrderTrackingScreen.tsx';
+import OrderScreen from './src/screens/order/OrderScreen.tsx';
 import OrderDetailScreen from './src/screens/order/OrderDetailScreen';
 import ReviewScreen from './src/screens/review/ReviewScreen';
 import Onboarding from './src/screens/Onboarding';
@@ -23,6 +23,7 @@ import ResetPasswordScreen from './src/screens/auth/ResetPasswordScreen';
 import AdminTabSlide from './src/screens/dashboard/navigation/AdminTabSlide.tsx';
 import ProductFilterScreen from './src/screens/product/ProductFilterScreen.tsx';
 import {CartProvider} from './src/context/CartContext.tsx';
+import ProfileDetailScreen from './src/screens/user/ProfileDetailScreen.tsx';
 
 console.log('API URL:', Config.API_URL);
 axios.defaults.baseURL = Config.API_URL;
@@ -69,6 +70,7 @@ const App = () => {
           <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
           <Stack.Screen name="Review" component={ReviewScreen} />
           <Stack.Screen name="DashboardScreen" component={AdminTabSlide} />
+          <Stack.Screen name="ProfileDetail" component={ProfileDetailScreen} />
         </Stack.Navigator>
         <Toast position="bottom" config={toastConfig} />
       </NavigationContainer>

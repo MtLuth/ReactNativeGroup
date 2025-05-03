@@ -14,6 +14,8 @@ import {Product} from '../../models/product';
 import {appColors} from '../../themes/appColors';
 import {showErrorToast, showSuccessToast} from '../../utils/toast';
 import MTShopSearchBar from '../../components/input/SearchBarComponent';
+import {getItem} from '../../utils/storage';
+import {useCart} from '../../context/CartContext';
 
 const limit = 10;
 
@@ -25,8 +27,10 @@ const ProductFilterScreen = () => {
 
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
-  const {searchText, context} = route.params;
+  const {searchText, context, categoryId} = route.params;
   const [searchContent, setSearchContent] = useState(searchText);
+  const [category, setCategory] = useState(categoryId);
+  const {cartCount, updateCart} = useCart();
 
   const fetchProducts = async (pageNumber = 1, search = '') => {
     if (isLoading || !hasMore) return;
@@ -42,6 +46,10 @@ const ProductFilterScreen = () => {
         params.sortBy = 'totalOrders';
         params.sortOrder = 'desc';
       }
+      if (category) {
+        params.category = category;
+      }
+      console.log('params', params);
 
       const res = await axios.get(`/product`, {params});
 
@@ -65,6 +73,38 @@ const ProductFilterScreen = () => {
     }
   };
 
+  const fetchCartCount = async () => {
+    try {
+      const token = getItem('accessToken');
+      if (!token) return;
+      const res = await axios.get('/cart', {
+        headers: {Authorization: `Bearer ${token}`},
+      });
+      updateCart(res.data.data.length);
+    } catch (error) {
+      showErrorToast('Lỗi lấy giỏ hàng');
+    }
+  };
+
+  const addToCart = async (productId: string) => {
+    try {
+      const token = getItem('accessToken');
+      if (!token) {
+        showErrorToast('Bạn cần đăng nhập để mua hàng');
+        return;
+      }
+      await axios.post(
+        '/cart',
+        {productId, quantity: 1},
+        {headers: {Authorization: `Bearer ${token}`}},
+      );
+      fetchCartCount();
+      showSuccessToast('Đã thêm vào giỏ hàng');
+    } catch (error) {
+      showErrorToast('Lỗi khi thêm vào giỏ hàng');
+    }
+  };
+
   useEffect(() => {
     setPage(1);
     setHasMore(true);
@@ -72,10 +112,12 @@ const ProductFilterScreen = () => {
   }, [searchContent]);
 
   const handleSearch = (text: string) => {
+    console.log('text', text);
+    setSearchContent(text);
+    setCategory('');
     setPage(1);
     setHasMore(true);
     setProducts([]);
-    fetchProducts(1, text);
   };
 
   const renderItem = ({item}: {item: Product}) => (
@@ -86,7 +128,7 @@ const ProductFilterScreen = () => {
       rating={item.averageRating}
       reviewCount={item.totalReviews}
       soldCount={item.totalOrders}
-      onAddToCart={() => {}}
+      onAddToCart={() => addToCart(item._id)} // ✅ gọi hàm mới
       onPress={() => navigation.navigate('ProductDetail', {id: item._id})}
     />
   );
@@ -100,7 +142,7 @@ const ProductFilterScreen = () => {
         numColumns={2}
         contentContainerStyle={styles.list}
         columnWrapperStyle={styles.row}
-        onEndReached={() => fetchProducts(page, searchText)}
+        onEndReached={() => fetchProducts(page, searchContent)}
         onEndReachedThreshold={1}
         ListHeaderComponent={
           <View>

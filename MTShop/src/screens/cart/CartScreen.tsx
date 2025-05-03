@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,11 @@ import axios from 'axios';
 import {appColors} from '../../themes/appColors';
 import {showErrorToast, showSuccessToast} from '../../utils/toast';
 import {getItem} from '../../utils/storage';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import CartItemComponent from '../../components/cart/CartItemComponent';
 import AppMainContainer from '../../components/container/AppMainContainer';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
@@ -131,9 +135,11 @@ const CartScreen = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCart();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchCart();
+    }, []),
+  );
 
   if (loading) {
     return <ActivityIndicator size="large" color={appColors.primary} />;

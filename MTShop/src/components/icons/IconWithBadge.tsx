@@ -8,6 +8,7 @@ interface IconWithBadgeProps {
   iconColor?: string;
   iconSize?: number;
   badgeCount: any;
+  iconStyle?: any;
 }
 
 const IconWithBadge: React.FC<IconWithBadgeProps> = ({
@@ -16,10 +17,17 @@ const IconWithBadge: React.FC<IconWithBadgeProps> = ({
   badgeCount,
   iconColor = '#fff',
   iconSize = 26,
+  iconStyle,
 }) => {
   return (
     <View>
-      <Icon name={iconName} type={iconType} color={iconColor} size={iconSize} />
+      <Icon
+        name={iconName}
+        type={iconType}
+        color={iconColor}
+        size={iconSize}
+        style={iconStyle || {}}
+      />
       {Number(badgeCount) > 0 && (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>

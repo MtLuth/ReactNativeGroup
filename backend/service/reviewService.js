@@ -22,7 +22,18 @@ class ReviewService {
       rating,
       comment,
     });
+
     await review.save();
+
+    // ✅ Cập nhật isReviewed cho sản phẩm trong order
+    const item = order.items.find(
+      (i) => i.product.toString() === productId.toString()
+    );
+    if (item) {
+      item.isReviewed = true;
+      await order.save();
+    }
+
     return review;
   }
 

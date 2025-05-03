@@ -10,6 +10,7 @@ const orderSchema = new mongoose.Schema({
         required: true,
       },
       quantity: { type: Number, required: true },
+      isReviewed: { type: Boolean, default: false },
     },
   ],
   status: {
@@ -26,6 +27,8 @@ const orderSchema = new mongoose.Schema({
   },
   total: { type: Number, required: true },
   createdAt: { type: Date, default: Date.now },
+  recipientName: { type: String, required: true },
+  phoneNumber: { type: String, required: true },
 });
 
 const Order = mongoose.model("Order", orderSchema);

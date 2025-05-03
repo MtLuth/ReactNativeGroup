@@ -1,9 +1,10 @@
+import CartItem from "../model/cartItem.js";
 import Order from "../model/order.js";
 import Product from "../model/product.js";
 import notificationService from "./notificationService.js";
 
 class OrderService {
-  async createOrder(userId, items, address) {
+  async createOrder(userId, items, address, recipientName, phoneNumber) {
     try {
       let total = 0;
       const enrichedItems = [];
@@ -25,14 +26,20 @@ class OrderService {
         items: enrichedItems,
         address,
         total,
+        recipientName,
+        phoneNumber,
+      });
+      await CartItem.deleteMany({
+        user: userId,
+        product: { $in: items.map((item) => item.product) },
       });
 
       await newOrder.save();
 
       await notificationService.create(
-          userId,
-          "Bạn đã đặt hàng thành công!",
-          "ORDER_PLACED"
+        userId,
+        "Bạn đã đặt hàng thành công!",
+        "ORDER_PLACED"
       );
 
       setTimeout(async () => {
@@ -48,19 +55,6 @@ class OrderService {
       return newOrder;
     } catch (err) {
       console.error("Lỗi trong createOrder:", err);
-      throw err;
-    }
-  }
-
-  async getOrderById(id) {
-    try {
-      const order = await Order.findById(id)
-          .populate("user")
-          .populate("items.product");
-      if (!order) throw new Error("Order not found");
-      return order;
-    } catch (err) {
-      console.error("Lỗi trong getOrderById:", err);
       throw err;
     }
   }
@@ -88,9 +82,9 @@ class OrderService {
       await order.save();
 
       await notificationService.create(
-          userId,
-          "Đơn hàng của bạn đã bị hủy.",
-          "ORDER_CANCELED"
+        userId,
+        "Đơn hàng của bạn đã bị hủy.",
+        "ORDER_CANCELED"
       );
 
       return order;
@@ -110,9 +104,9 @@ class OrderService {
 
       if (status === "Delivered") {
         await notificationService.create(
-            order.user,
-            "Đơn hàng của bạn đã giao thành công!",
-            "ORDER_DELIVERED"
+          order.user,
+          "Đơn hàng của bạn đã giao thành công!",
+          "ORDER_DELIVERED"
         );
       }
 
@@ -126,8 +120,8 @@ class OrderService {
   async getOrderById(userId, orderId) {
     try {
       const order = await Order.findOne({ _id: orderId, user: userId })
-          .populate("user", "fullName email")
-          .populate("items.product", "name price");
+        .populate("user", "fullName email")
+        .populate("items.product", "name price imageUrl");
       if (!order) throw new Error("Order not found");
       return order;
     } catch (err) {

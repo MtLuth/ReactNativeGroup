@@ -12,33 +12,25 @@ class ProductService {
     sortOrder = "desc"
   ) {
     try {
-      const skip = (page - 1) * limit;
       const query = {};
-
-      if (search) {
-        query.name = { $regex: search, $options: "i" };
-      }
-
       if (category) {
         query.category = category;
       }
 
-      const total = await Product.countDocuments(query);
-      const products = await Product.find(query)
-        .populate("category")
-        .skip(skip)
-        .limit(limit);
+      let rawProducts = await Product.find(query).populate("category");
 
-      let results = [];
-      for (let product of products) {
-        let reviews = await Review.find({ product: product._id });
-        let totalRating = 0;
-        let totalReviews = reviews.length;
+      if (search) {
+        const searchText = search.toLowerCase();
+        rawProducts = rawProducts.filter((product) =>
+          product.name.toLowerCase().includes(searchText)
+        );
+      }
 
-        for (let review of reviews) {
-          totalRating += review.rating;
-        }
-
+      const results = [];
+      for (let product of rawProducts) {
+        const reviews = await Review.find({ product: product._id });
+        const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+        const totalReviews = reviews.length;
         const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
 
         const orders = await Order.find({
@@ -53,24 +45,29 @@ class ProductService {
           totalOrders: orders.length,
         });
       }
+
+      // Sort theo field động
       if (
-        sortBy &&
         ["averageRating", "totalOrders", "price", "createdAt"].includes(sortBy)
       ) {
-        const sortDirection = sortOrder === "asc" ? 1 : -1;
+        const direction = sortOrder === "asc" ? 1 : -1;
         results.sort((a, b) => {
-          if (a[sortBy] < b[sortBy]) return -1 * sortDirection;
-          if (a[sortBy] > b[sortBy]) return 1 * sortDirection;
+          if (a[sortBy] < b[sortBy]) return -1 * direction;
+          if (a[sortBy] > b[sortBy]) return 1 * direction;
           return 0;
         });
       }
 
+      const totalItems = results.length;
+      const totalPages = Math.ceil(totalItems / limit);
+      const paginatedResults = results.slice((page - 1) * limit, page * limit);
+
       return {
         page,
         limit,
-        totalPages: Math.ceil(total / limit),
-        totalItems: total,
-        products: results,
+        totalPages,
+        totalItems,
+        products: paginatedResults,
       };
     } catch (error) {
       throw new Error("Lỗi khi lấy danh sách sản phẩm: " + error.message);

@@ -9,8 +9,14 @@ class OrderController {
       return res.status(400).json({ errors: errors.array() });
     }
     const userId = req.user.userId;
-    const { items, address } = req.body;
-    const order = await orderService.createOrder(userId, items, address);
+    const { items, address, recipientName, phoneNumber } = req.body;
+    const order = await orderService.createOrder(
+      userId,
+      items,
+      address,
+      recipientName,
+      phoneNumber
+    );
     res.status(201).json({ status: "success", data: order });
   });
 

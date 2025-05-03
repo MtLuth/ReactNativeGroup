@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {use, useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,14 +6,20 @@ import {
   ActivityIndicator,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import {useRoute, useNavigation} from '@react-navigation/native';
+import {
+  useRoute,
+  useNavigation,
+  useFocusEffect,
+} from '@react-navigation/native';
 import {appColors} from '../../themes/appColors';
 import {showErrorToast} from '../../utils/toast';
 import {getItem} from '../../utils/storage';
 import AppMainContainer from '../../components/container/AppMainContainer';
+import {appFonts} from '../../themes/appFont';
 
 const OrderDetailScreen = () => {
   const route = useRoute();
@@ -30,6 +36,7 @@ const OrderDetailScreen = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log('Order detail:', res.data);
       setOrder(res.data.data);
     } catch (error) {
       showErrorToast('Không thể tải chi tiết đơn hàng');
@@ -38,9 +45,11 @@ const OrderDetailScreen = () => {
     }
   };
 
-  useEffect(() => {
-    fetchOrderDetail();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrderDetail();
+    }, []),
+  );
 
   if (loading) {
     return (
@@ -53,7 +62,7 @@ const OrderDetailScreen = () => {
   if (!order) return null;
 
   const statusMap = {
-    Pending: {label: 'Đơn hàng mới', color: '#FFA500'},
+    Pending: {label: 'Đang xử lý', color: '#FFA500'},
     Confirmed: {label: 'Đã xác nhận', color: '#007bff'},
     Preparing: {label: 'Đang chuẩn bị hàng', color: '#6c757d'},
     Shipping: {label: 'Đang giao hàng', color: '#17a2b8'},
@@ -68,7 +77,7 @@ const OrderDetailScreen = () => {
   };
 
   return (
-    <AppMainContainer mainTitle="Đặt hàng" isShowingBackButton={true}>
+    <AppMainContainer isShowingBackButton={true} isShowRightIcon={false}>
       <ScrollView style={styles.container}>
         <Text style={styles.title}>Chi tiết đơn hàng</Text>
 
@@ -80,6 +89,12 @@ const OrderDetailScreen = () => {
           <Text style={styles.value}>
             {order.user.fullName} ({order.user.email})
           </Text>
+        </Text>
+        <Text style={styles.label}>
+          Người nhận: <Text style={styles.value}>{order.recipientName}</Text>
+        </Text>
+        <Text style={styles.label}>
+          Số điện thoại: <Text style={styles.value}>{order.phoneNumber}</Text>
         </Text>
         <Text style={styles.label}>
           Ngày đặt:{' '}
@@ -96,8 +111,21 @@ const OrderDetailScreen = () => {
 
         <Text style={[styles.sectionTitle, {marginTop: 20}]}>Sản phẩm:</Text>
         {order.items.map(item => (
-          <View key={item._id} style={styles.itemRow}>
-            <View style={{flex: 1}}>
+          <TouchableOpacity
+            key={item._id}
+            style={styles.itemRow}
+            onPress={() =>
+              navigation.navigate('ProductDetail', {
+                id: item.product._id,
+              })
+            }>
+            <View style={styles.imageWrapper}>
+              <Image
+                source={{uri: item.product.imageUrl}}
+                style={styles.productImage}
+              />
+            </View>
+            <View style={{flex: 1, marginLeft: 10}}>
               <Text style={styles.productName}>{item.product.name}</Text>
               <Text style={styles.quantity}>x{item.quantity}</Text>
               <Text style={styles.price}>
@@ -106,17 +134,31 @@ const OrderDetailScreen = () => {
             </View>
             {order.status === 'Completed' && (
               <TouchableOpacity
-                style={styles.reviewButton}
-                onPress={() =>
-                  navigation.navigate('Review', {
-                    productId: item.product._id,
-                    orderId: order._id,
-                  })
-                }>
-                <Text style={styles.reviewButtonText}>Đánh giá</Text>
+                style={[
+                  styles.reviewButton,
+                  item.isReviewed && styles.reviewedButton,
+                ]}
+                disabled={item.isReviewed}
+                onPress={() => {
+                  if (!item.isReviewed) {
+                    navigation.navigate('Review', {
+                      productId: item.product._id,
+                      orderId: order._id,
+                      productName: item.product.name,
+                      productImage: item.product.imageUrl,
+                    });
+                  }
+                }}>
+                <Text
+                  style={[
+                    styles.reviewButtonText,
+                    item.isReviewed && styles.reviewedButtonText,
+                  ]}>
+                  {item.isReviewed ? 'Đã đánh giá' : 'Đánh giá'}
+                </Text>
               </TouchableOpacity>
             )}
-          </View>
+          </TouchableOpacity>
         ))}
 
         <View style={styles.totalRow}>
@@ -131,6 +173,7 @@ const OrderDetailScreen = () => {
 };
 
 export default OrderDetailScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -170,7 +213,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+  },
+  imageWrapper: {
+    width: 64,
+    height: 64,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  productImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   productName: {
     fontWeight: '600',
@@ -187,15 +240,23 @@ const styles = StyleSheet.create({
     color: appColors.primary,
   },
   reviewButton: {
-    backgroundColor: appColors.primary,
+    backgroundColor: appColors.primaryLight,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
+    marginLeft: 10,
+  },
+  reviewedButton: {
+    backgroundColor: '#fff',
+  },
+  reviewedButtonText: {
+    color: appColors.success,
+    fontFamily: appFonts.MontserratBold,
   },
   reviewButtonText: {
     color: '#fff',
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: appFonts.MontserratBold,
   },
   totalRow: {
     marginTop: 20,
