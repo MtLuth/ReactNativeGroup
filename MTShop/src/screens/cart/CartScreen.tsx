@@ -6,18 +6,35 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Image,
 } from 'react-native';
 import axios from 'axios';
 import {appColors} from '../../themes/appColors';
 import {showErrorToast, showSuccessToast} from '../../utils/toast';
 import {getItem} from '../../utils/storage';
-import {CheckBox, Icon} from 'react-native-elements';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import CartItemComponent from '../../components/cart/CartItemComponent';
+import AppMainContainer from '../../components/container/AppMainContainer';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
-const CartScreen = ({navigation}) => {
+interface CartItem {
+  _id: string;
+  product: {
+    _id: string;
+    name: string;
+    price: number;
+    imageUrl: string;
+  };
+  quantity: number;
+}
+
+const CartScreen = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+  const {navType} = route.params || {};
+  const tabBarHeight = navType === 'stack' ? 0 : useBottomTabBarHeight();
 
   const toggleSelect = (itemId: string) => {
     setSelectedItems(prev =>
@@ -28,12 +45,14 @@ const CartScreen = ({navigation}) => {
   };
 
   const getSelectedItems = () => {
-    return cartItems.filter(item => selectedItems.includes(item._id));
+    return cartItems.filter((item: CartItem) =>
+      selectedItems.includes(item._id),
+    );
   };
 
   const getTotal = () =>
     getSelectedItems().reduce(
-      (total, item) => total + item.product.price * item.quantity,
+      (total, item: CartItem) => total + item.product.price * item.quantity,
       0,
     );
 
@@ -55,10 +74,12 @@ const CartScreen = ({navigation}) => {
     }
   };
 
-  const removeItem = async cartItemId => {
+  const removeItem = async (cartItemId: any) => {
     try {
       const token = getItem('accessToken');
-      if (!token) return;
+      if (!token) {
+        return;
+      }
 
       await axios.delete(`/cart/${cartItemId}`, {
         headers: {
@@ -73,57 +94,83 @@ const CartScreen = ({navigation}) => {
     }
   };
 
+  const increaseQuantity = async (item: CartItem) => {
+    try {
+      const token = getItem('accessToken');
+      await axios.put(
+        `/cart/${item._id}`,
+        {quantity: item.quantity + 1},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      fetchCart();
+    } catch (err) {
+      showErrorToast('Không thể tăng số lượng');
+    }
+  };
+
+  const decreaseQuantity = async (item: CartItem) => {
+    if (item.quantity <= 1) return;
+    try {
+      const token = getItem('accessToken');
+      await axios.put(
+        `/cart/${item._id}`,
+        {quantity: item.quantity - 1},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      fetchCart();
+    } catch (err) {
+      showErrorToast('Không thể giảm số lượng');
+    }
+  };
+
   useEffect(() => {
     fetchCart();
   }, []);
 
-  if (loading)
+  if (loading) {
     return <ActivityIndicator size="large" color={appColors.primary} />;
+  }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" type="font-awesome" color="#000" size={20} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Giỏ hàng</Text>
-        <View style={{width: 24}} />
-      </View>
-      <FlatList
-        data={cartItems}
-        keyExtractor={item => item._id}
-        renderItem={({item}: any) => (
-          <View style={styles.itemContainer}>
-            <View style={styles.itemRow}>
-              <CheckBox
-                checked={selectedItems.includes(item._id)}
-                onPress={() => toggleSelect(item._id)}
-                containerStyle={{padding: 0, marginRight: 8}}
-              />
-              <Image
-                source={{uri: item.product.imageUrl}}
-                style={styles.image}
-              />
-              <View style={styles.info}>
-                <Text style={styles.name}>{item.product.name}</Text>
-                <Text style={styles.price}>
-                  {item.product.price.toLocaleString()} VND x {item.quantity}
-                </Text>
-              </View>
-              <TouchableOpacity onPress={() => removeItem(item._id)}>
-                <Text style={styles.remove}>🗑</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-        ListEmptyComponent={
-          <Text style={{textAlign: 'center', padding: 40}}>
-            Giỏ hàng trống.
-          </Text>
-        }
-      />
+    <View style={styles.outerContainer}>
+      <AppMainContainer
+        mainTitle="Giỏ hàng"
+        isShowingBackButton={true}
+        isShowRightIcon={false}>
+        <FlatList
+          data={cartItems}
+          keyExtractor={(item: CartItem) => item._id}
+          renderItem={({item}: {item: CartItem}) => (
+            <CartItemComponent
+              name={item.product.name}
+              image={item.product.imageUrl}
+              price={item.product.price}
+              quantity={item.quantity}
+              selected={selectedItems.includes(item._id)}
+              onSelect={() => toggleSelect(item._id)}
+              onIncrease={() => increaseQuantity(item)}
+              onDecrease={() => decreaseQuantity(item)}
+              onRemove={() => removeItem(item._id)}
+            />
+          )}
+          contentContainerStyle={{paddingBottom: 16}}
+          ListEmptyComponent={
+            <Text style={{textAlign: 'center', padding: 40}}>
+              Giỏ hàng trống.
+            </Text>
+          }
+        />
+      </AppMainContainer>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, {marginBottom: tabBarHeight}]}>
         <View style={styles.totalRow}>
           <Text style={styles.totalText}>Tổng cộng:</Text>
           <Text style={styles.totalAmount}>
@@ -152,7 +199,11 @@ const CartScreen = ({navigation}) => {
 export default CartScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f9f9f9'},
+  container: {
+    flex: 1,
+    backgroundColor: '#f9f9f9',
+  },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -216,6 +267,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: 16,
+    width: '100%',
     borderTopWidth: 1,
     borderColor: '#ddd',
     backgroundColor: '#fff',
@@ -245,5 +297,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 15,
+  },
+
+  outerContainer: {
+    flex: 1,
+    backgroundColor: '#f9f9f9',
   },
 });

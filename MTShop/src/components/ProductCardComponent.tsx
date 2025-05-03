@@ -42,11 +42,11 @@ const ProductCard = ({
 
 const styles = StyleSheet.create({
   card: {
+    flex: 1,
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 12,
-    margin: 8,
-    flex: 1,
+    marginBottom: 12,
     elevation: 2,
   },
   image: {

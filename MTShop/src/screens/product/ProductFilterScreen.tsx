@@ -12,7 +12,7 @@ import {useRoute, useNavigation} from '@react-navigation/native';
 import ProductCard from '../../components/ProductCardComponent';
 import {Product} from '../../models/product';
 import {appColors} from '../../themes/appColors';
-import {showErrorToast} from '../../utils/toast';
+import {showErrorToast, showSuccessToast} from '../../utils/toast';
 import MTShopSearchBar from '../../components/input/SearchBarComponent';
 
 const limit = 10;
@@ -29,20 +29,22 @@ const ProductFilterScreen = () => {
   const [searchContent, setSearchContent] = useState(searchText);
 
   const fetchProducts = async (pageNumber = 1, search = '') => {
-    if (isLoading || !hasMore) {
-      return;
-    }
+    if (isLoading || !hasMore) return;
 
     setIsLoading(true);
     try {
-      console.log('Fetching products:', pageNumber, search);
-      const res = await axios.get(`/product`, {
-        params: {
-          page: pageNumber,
-          limit,
-          search,
-        },
-      });
+      const params: any = {
+        page: pageNumber,
+        limit,
+        search,
+      };
+      if (context === 'best-sellers') {
+        showSuccessToast(context);
+        params.sortBy = 'totalOrders';
+        params.sortOrder = 'desc';
+      }
+
+      const res = await axios.get(`/product`, {params});
 
       const newProducts = res.data?.data?.products || [];
 
@@ -91,7 +93,7 @@ const ProductFilterScreen = () => {
   );
 
   return (
-    <AppMainContainer>
+    <AppMainContainer isShowingBackButton={true}>
       <FlatList
         data={products}
         renderItem={renderItem}
@@ -134,8 +136,11 @@ export default ProductFilterScreen;
 const styles = StyleSheet.create({
   list: {
     paddingBottom: 16,
+    paddingHorizontal: 0,
   },
   row: {
+    paddingHorizontal: 0,
+    gap: 12,
     justifyContent: 'space-between',
   },
   loading: {

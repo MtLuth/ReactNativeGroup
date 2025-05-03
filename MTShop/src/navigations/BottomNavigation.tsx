@@ -4,14 +4,14 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Icon} from 'react-native-elements';
 import type {BottomTabBarButtonProps} from '@react-navigation/bottom-tabs';
 
-import HomeScreen from '../screens/HomeScreen';
 import NotificationsScreen from '../screens/notification/NotificationsScreen';
 import ProfileScreen from '../screens/user/ProfileScreen';
 import CartScreen from '../screens/cart/CartScreen.tsx';
-import SearchScreen from '../screens/product/ProductSearchScreen.tsx';
 import HomeStackNavigator from './HomeStackNavigator.tsx';
-
-const NullScreen = () => null;
+import IconWithBadge from '../components/icons/IconWithBadge.tsx';
+import {useBadgeCount} from '../hooks/useBadgeCountHooks.ts';
+import {showSuccessToast} from '../utils/toast.tsx';
+import {useCart} from '../context/CartContext.tsx';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,6 +30,8 @@ const CustomTabBarButton: React.FC<BottomTabBarButtonProps> = ({
 );
 
 export default function BottomTabNavigator() {
+  const {cartCount} = useCart();
+  showSuccessToast(cartCount.toString());
   return (
     <Tab.Navigator
       screenOptions={{
@@ -69,7 +71,11 @@ export default function BottomTabNavigator() {
         component={CartScreen}
         options={{
           tabBarIcon: () => (
-            <Icon name="shopping-cart" type="feather" color="#fff" size={26} />
+            <IconWithBadge
+              iconName="shopping-cart"
+              iconType="feather"
+              badgeCount={cartCount}
+            />
           ),
           tabBarButton: props => <CustomTabBarButton {...props} />,
           tabBarLabel: '',
@@ -77,12 +83,18 @@ export default function BottomTabNavigator() {
       />
 
       <Tab.Screen
-        name="Search"
-        component={SearchScreen}
+        name="OrderHistory"
+        component={CartScreen}
         options={{
-          tabBarLabel: 'Tìm kiếm',
+          title: 'Đơn hàng',
+          tabBarLabel: 'Đơn h',
           tabBarIcon: ({color}) => (
-            <Icon name="search" type="feather" color={color} size={24} />
+            <Icon
+              name="document-text-outline"
+              type="ionicon"
+              color={color}
+              size={24}
+            />
           ),
         }}
       />

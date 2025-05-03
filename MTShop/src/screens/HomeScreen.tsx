@@ -29,6 +29,7 @@ import HorizontalSlideContainer from '../components/container/HorizontalSlideCon
 import {Category} from '../models/category';
 import BannerComponent from '../components/BannerComponent';
 import MTShopSearchBar from '../components/input/SearchBarComponent';
+import {useCart} from '../context/CartContext';
 
 const {height} = Dimensions.get('window');
 
@@ -42,7 +43,8 @@ const HomeScreen = () => {
   const [category, setCategory] = useState('');
   const modalAnim = useRef(new Animated.Value(height)).current;
   const navigation = useNavigation<any>();
-  const [cartCount, setCartCount] = useState(0);
+  const {cartCount, updateCart, loading} = useCart();
+  const [searchText, setSearchText] = useState('');
 
   const limit = 6;
 
@@ -146,7 +148,6 @@ const HomeScreen = () => {
         {headers: {Authorization: `Bearer ${token}`}},
       );
 
-      showSuccessToast('Đã thêm vào giỏ hàng');
       await fetchCartCount();
     } catch (error) {
       showErrorToast('Lỗi khi thêm vào giỏ hàng' + error);
@@ -177,7 +178,7 @@ const HomeScreen = () => {
         },
       });
 
-      setCartCount(res.data.data.length);
+      updateCart(res.data.data.length);
       console.log('Số lượng giỏ hàng:', res.data.data.length);
       console.log('Chi tiết:', res.data.data);
     } catch (error) {
@@ -197,7 +198,7 @@ const HomeScreen = () => {
         setCategory(item._id);
         setPage(1);
         setHasMore(true);
-        fetchProducts(1, item._id, searchText);
+        fetchProducts(1, item._id, '');
       }}>
       <View
         style={{
@@ -226,7 +227,7 @@ const HomeScreen = () => {
     }, []),
   );
   return (
-    <AppMainContainer>
+    <AppMainContainer isShowRightIcon={true} rightIconType="profile">
       <Modal visible={showModal} transparent animationType="none">
         <View style={styles.modalOverlay}>
           <Animated.View
@@ -288,7 +289,7 @@ const HomeScreen = () => {
         renderItem={renderItem}
         keyExtractor={item => item._id.toString()}
         numColumns={2}
-        contentContainerStyle={HomeStyle.productList}
+        contentContainerStyle={[HomeStyle.productList, {paddingBottom: 80}]}
         columnWrapperStyle={HomeStyle.row}
         onEndReached={() => fetchProducts(page)}
         onEndReachedThreshold={1}
@@ -353,7 +354,7 @@ const HomeScreen = () => {
               resizeMode="cover"
             />
             <BannerComponent
-              image="https://cdn.shopify.com/s/files/1/0661/9630/7113/files/summer-sale-banner.png?v=1661763842"
+              image={require('../assets/images/best-sellers.png')}
               title="Best Sellers"
               subtitle="Hottest Items in Store"
               onPress={() =>

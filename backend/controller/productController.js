@@ -9,11 +9,16 @@ class ProductController {
     const search = req.query.search || "";
     const category = req.query.category || "";
 
+    const sortBy = req.query.sortBy || "createdAt";
+    const sortOrder = req.query.sortOrder || "desc";
+
     const products = await productService.getAllProducts(
       page,
       limit,
       search,
-      category
+      category,
+      sortBy,
+      sortOrder
     );
 
     res.status(200).json({
@@ -51,17 +56,16 @@ class ProductController {
     });
   });
 
-
   updateProduct = catchAsync(async (req, res) => {
     const { id } = req.params;
     const updated = await productService.updateProduct(id, req.body);
-    res.status(200).json({ status: 'success', data: updated });
+    res.status(200).json({ status: "success", data: updated });
   });
 
   deleteProduct = catchAsync(async (req, res) => {
     const { id } = req.params;
     await productService.deleteProduct(id);
-    res.status(204).json({ status: 'success', data: null });
+    res.status(204).json({ status: "success", data: null });
   });
 }
 

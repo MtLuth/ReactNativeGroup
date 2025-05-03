@@ -27,7 +27,6 @@ class CartService {
     return await newItem.save();
   }
 
-  // Update quantity of cart item
   async updateQuantity(id, quantity) {
     const item = await CartItem.findById(id);
 
@@ -37,14 +36,12 @@ class CartService {
     return await item.save();
   }
 
-  // Remove item from cart
   async removeFromCart(id) {
     return await CartItem.findOneAndDelete({
       _id: id,
     });
   }
 
-  // Clear entire cart for user
   async clearCart(userId) {
     return await CartItem.deleteMany({ user: userId });
   }

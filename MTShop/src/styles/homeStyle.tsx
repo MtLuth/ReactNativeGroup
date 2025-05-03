@@ -7,6 +7,7 @@ export const HomeStyle = StyleSheet.create({
   },
   row: {
     justifyContent: 'space-between',
+    gap: 12,
   },
   header: {
     padding: 16,

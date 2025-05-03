@@ -14,6 +14,7 @@ import {decodeJWT, getItem} from '../../utils/storage';
 import {showErrorToast} from '../../utils/toast';
 import {Icon} from 'react-native-elements';
 import {useNavigation} from '@react-navigation/native';
+import AppMainContainer from '../../components/container/AppMainContainer';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -89,17 +90,7 @@ const NotificationsScreen = () => {
   };
 
   return (
-    <View style={{flex: 1}}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Main', {screen: 'Home'})}>
-          <Icon name="arrow-left" type="font-awesome" color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Thông báo</Text>
-        <View style={{width: 24}} />
-      </View>
-
+    <AppMainContainer mainTitle="Thông báo" isShowingBackButton={true}>
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#2f80ed" />
@@ -112,28 +103,13 @@ const NotificationsScreen = () => {
           contentContainerStyle={styles.container}
         />
       )}
-    </View>
+    </AppMainContainer>
   );
 };
 
 export default NotificationsScreen;
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomColor: '#ddd',
-    borderBottomWidth: 1,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-  },
   container: {
     padding: 16,
   },

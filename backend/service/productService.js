@@ -1,13 +1,18 @@
 import Order from "../model/order.js";
 import Product from "../model/product.js";
 import Review from "../model/review.js";
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 class ProductService {
-  async getAllProducts(page = 1, limit = 6, search = "", category = "") {
+  async getAllProducts(
+    page = 1,
+    limit = 6,
+    search = "",
+    category = "",
+    sortBy = "createdAt",
+    sortOrder = "desc"
+  ) {
     try {
       const skip = (page - 1) * limit;
-
-      // Xây dựng query tìm kiếm
       const query = {};
 
       if (search) {
@@ -15,7 +20,7 @@ class ProductService {
       }
 
       if (category) {
-        query.category = category; // Lọc theo _id của category
+        query.category = category;
       }
 
       const total = await Product.countDocuments(query);
@@ -28,12 +33,13 @@ class ProductService {
       for (let product of products) {
         let reviews = await Review.find({ product: product._id });
         let totalRating = 0;
-        let totalReviews = 0;
-        reviews.forEach((review) => {
+        let totalReviews = reviews.length;
+
+        for (let review of reviews) {
           totalRating += review.rating;
-          totalReviews++;
-        });
-        let averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
+        }
+
+        const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
 
         const orders = await Order.find({
           status: { $ne: "Canceled" },
@@ -42,9 +48,20 @@ class ProductService {
 
         results.push({
           ...product._doc,
-          averageRating: averageRating,
-          totalReviews: totalReviews,
+          averageRating,
+          totalReviews,
           totalOrders: orders.length,
+        });
+      }
+      if (
+        sortBy &&
+        ["averageRating", "totalOrders", "price", "createdAt"].includes(sortBy)
+      ) {
+        const sortDirection = sortOrder === "asc" ? 1 : -1;
+        results.sort((a, b) => {
+          if (a[sortBy] < b[sortBy]) return -1 * sortDirection;
+          if (a[sortBy] > b[sortBy]) return 1 * sortDirection;
+          return 0;
         });
       }
 
@@ -111,7 +128,7 @@ class ProductService {
       new: true,
       runValidators: true,
     });
-    if (!updated) throw new Error('Không tìm thấy sản phẩm để cập nhật');
+    if (!updated) throw new Error("Không tìm thấy sản phẩm để cập nhật");
     return updated;
   }
 
@@ -121,21 +138,21 @@ class ProductService {
       session.startTransaction();
 
       const removed = await Product.findByIdAndDelete(id, { session });
-      if (!removed) throw new Error('Không tìm thấy sản phẩm để xoá');
+      if (!removed) throw new Error("Không tìm thấy sản phẩm để xoá");
 
       await Review.deleteMany({ product: id }).session(session);
 
       await Order.updateMany(
-          { 'items.product': id },
-          { $pull: { items: { product: id } } },
-          { session },
+        { "items.product": id },
+        { $pull: { items: { product: id } } },
+        { session }
       );
 
       await session.commitTransaction();
       return removed;
     } catch (err) {
       await session.abortTransaction();
-      throw new Error('Lỗi khi xoá sản phẩm: ' + err.message);
+      throw new Error("Lỗi khi xoá sản phẩm: " + err.message);
     } finally {
       session.endSession();
     }

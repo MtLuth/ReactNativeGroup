@@ -9,7 +9,6 @@ import {
 import {Icon} from 'react-native-elements';
 import {appColors} from '../../themes/appColors';
 import {appFonts} from '../../themes/appFont';
-import {defaultFormat} from 'moment';
 
 interface MTShopSearchBarProps {
   placeholder?: string;
@@ -69,8 +68,12 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    height: 56,
     fontSize: 14,
     color: appColors.textPrimary,
     fontFamily: appFonts.MontserratRegular,
+    paddingVertical: 0,
+    textAlignVertical: 'center',
+    includeFontPadding: false,
   },
 });

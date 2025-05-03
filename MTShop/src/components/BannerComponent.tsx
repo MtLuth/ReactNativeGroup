@@ -5,7 +5,7 @@ import {appFonts} from '../themes/appFont';
 import {appColors} from '../themes/appColors';
 
 interface BannerComponentProps {
-  image: string;
+  image: any;
   title: string;
   subtitle?: string;
   onPress?: () => void;
@@ -21,11 +21,7 @@ const BannerComponent: React.FC<BannerComponentProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Image
-        source={{uri: image}}
-        style={styles.bannerImage}
-        resizeMode="cover"
-      />
+      <Image source={image} style={styles.bannerImage} resizeMode="cover" />
       <View style={styles.content}>
         <View>
           <Text style={styles.title}>{title}</Text>
@@ -60,7 +56,7 @@ const styles = StyleSheet.create({
   },
   bannerImage: {
     width: '100%',
-    height: 160,
+    height: 250,
   },
   content: {
     padding: 12,
