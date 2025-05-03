@@ -12,6 +12,7 @@ import {appColors} from '../../themes/appColors';
 import GlobalText from '../GlobalText';
 import {appFonts} from '../../themes/appFont';
 import IconWithBadge from '../icons/IconWithBadge';
+import {useCart} from '../../context/CartContext';
 
 interface Props {
   children: React.ReactNode;
@@ -42,6 +43,8 @@ const AppMainContainer: React.FC<Props> = ({
     navigation.navigate('Cart', {navType: 'stack'});
   };
 
+  const {cartCount} = useCart();
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{backgroundColor: appColors.white}}>
@@ -71,13 +74,22 @@ const AppMainContainer: React.FC<Props> = ({
 
           {isShowRightIcon ? (
             rightIconType === 'cart' ? (
-              <TouchableOpacity onPress={onCartPress}>
+              <TouchableOpacity
+                onPress={onCartPress}
+                style={{
+                  width: 42,
+                  height: 42,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 21,
+                  backgroundColor: appColors.background,
+                }}>
                 <IconWithBadge
                   iconName="shopping-cart"
                   iconType="feather"
-                  badgeType="cart"
                   iconSize={24}
                   iconColor={appColors.primary}
+                  badgeCount={cartCount}
                 />
               </TouchableOpacity>
             ) : (
@@ -121,7 +133,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 16,
     paddingTop: 12,
   },
   logoImage: {

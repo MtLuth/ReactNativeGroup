@@ -39,7 +39,6 @@ const ProductFilterScreen = () => {
         search,
       };
       if (context === 'best-sellers') {
-        showSuccessToast(context);
         params.sortBy = 'totalOrders';
         params.sortOrder = 'desc';
       }
@@ -136,7 +135,7 @@ export default ProductFilterScreen;
 const styles = StyleSheet.create({
   list: {
     paddingBottom: 16,
-    paddingHorizontal: 0,
+    paddingHorizontal: 8,
   },
   row: {
     paddingHorizontal: 0,

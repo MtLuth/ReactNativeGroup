@@ -13,6 +13,7 @@ import {useRoute, useNavigation} from '@react-navigation/native';
 import {appColors} from '../../themes/appColors';
 import {showErrorToast} from '../../utils/toast';
 import {getItem} from '../../utils/storage';
+import AppMainContainer from '../../components/container/AppMainContainer';
 
 const OrderDetailScreen = () => {
   const route = useRoute();
@@ -67,63 +68,65 @@ const OrderDetailScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Chi tiết đơn hàng</Text>
+    <AppMainContainer mainTitle="Đặt hàng" isShowingBackButton={true}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>Chi tiết đơn hàng</Text>
 
-      <Text style={styles.label}>
-        Mã đơn: <Text style={styles.value}>#{order._id.slice(-6)}</Text>
-      </Text>
-      <Text style={styles.label}>
-        Người đặt:{' '}
-        <Text style={styles.value}>
-          {order.user.fullName} ({order.user.email})
+        <Text style={styles.label}>
+          Mã đơn: <Text style={styles.value}>#{order._id.slice(-6)}</Text>
         </Text>
-      </Text>
-      <Text style={styles.label}>
-        Ngày đặt:{' '}
-        <Text style={styles.value}>
-          {dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}
+        <Text style={styles.label}>
+          Người đặt:{' '}
+          <Text style={styles.value}>
+            {order.user.fullName} ({order.user.email})
+          </Text>
         </Text>
-      </Text>
-      <Text style={styles.label}>
-        Trạng thái:{' '}
-        <Text style={[styles.value, {color: statusInfo.color}]}>
-          {statusInfo.label}
+        <Text style={styles.label}>
+          Ngày đặt:{' '}
+          <Text style={styles.value}>
+            {dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}
+          </Text>
         </Text>
-      </Text>
+        <Text style={styles.label}>
+          Trạng thái:{' '}
+          <Text style={[styles.value, {color: statusInfo.color}]}>
+            {statusInfo.label}
+          </Text>
+        </Text>
 
-      <Text style={[styles.sectionTitle, {marginTop: 20}]}>Sản phẩm:</Text>
-      {order.items.map(item => (
-        <View key={item._id} style={styles.itemRow}>
-          <View style={{flex: 1}}>
-            <Text style={styles.productName}>{item.product.name}</Text>
-            <Text style={styles.quantity}>x{item.quantity}</Text>
-            <Text style={styles.price}>
-              {(item.product.price * item.quantity).toLocaleString()} VND
-            </Text>
+        <Text style={[styles.sectionTitle, {marginTop: 20}]}>Sản phẩm:</Text>
+        {order.items.map(item => (
+          <View key={item._id} style={styles.itemRow}>
+            <View style={{flex: 1}}>
+              <Text style={styles.productName}>{item.product.name}</Text>
+              <Text style={styles.quantity}>x{item.quantity}</Text>
+              <Text style={styles.price}>
+                {(item.product.price * item.quantity).toLocaleString()} VND
+              </Text>
+            </View>
+            {order.status === 'Completed' && (
+              <TouchableOpacity
+                style={styles.reviewButton}
+                onPress={() =>
+                  navigation.navigate('Review', {
+                    productId: item.product._id,
+                    orderId: order._id,
+                  })
+                }>
+                <Text style={styles.reviewButtonText}>Đánh giá</Text>
+              </TouchableOpacity>
+            )}
           </View>
-          {order.status === 'Completed' && (
-            <TouchableOpacity
-              style={styles.reviewButton}
-              onPress={() =>
-                navigation.navigate('Review', {
-                  productId: item.product._id,
-                  orderId: order._id,
-                })
-              }>
-              <Text style={styles.reviewButtonText}>Đánh giá</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      ))}
+        ))}
 
-      <View style={styles.totalRow}>
-        <Text style={styles.totalLabel}>Tổng cộng:</Text>
-        <Text style={styles.totalPrice}>
-          {order.total.toLocaleString()} VND
-        </Text>
-      </View>
-    </ScrollView>
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Tổng cộng:</Text>
+          <Text style={styles.totalPrice}>
+            {order.total.toLocaleString()} VND
+          </Text>
+        </View>
+      </ScrollView>
+    </AppMainContainer>
   );
 };
 

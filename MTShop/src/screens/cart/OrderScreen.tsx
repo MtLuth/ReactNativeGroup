@@ -15,6 +15,8 @@ import Toast from 'react-native-toast-message';
 import {appColors} from '../../themes/appColors';
 import {getItem} from '../../utils/storage';
 import {Icon} from 'react-native-elements';
+import AppMainContainer from '../../components/container/AppMainContainer';
+import AuthButton from '../../components/buttons/AuthButton';
 
 const CustomDropdown = ({data, selected, onSelect, label}: any) => {
   const [visible, setVisible] = useState(false);
@@ -58,6 +60,8 @@ const CustomDropdown = ({data, selected, onSelect, label}: any) => {
 
 const OrderScreen = ({route, navigation}: any) => {
   const [address, setAddress] = useState('');
+  const [recipientName, setRecipientName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
 
   const [provinces, setProvinces] = useState<any[]>([]);
@@ -111,8 +115,18 @@ const OrderScreen = ({route, navigation}: any) => {
   };
 
   const submitOrder = async () => {
-    if (!address || !selectedProvince || !selectedDistrict || !selectedWard) {
-      return Toast.show({type: 'error', text2: 'Vui lòng nhập đầy đủ địa chỉ'});
+    if (
+      !address ||
+      !recipientName ||
+      !phoneNumber ||
+      !selectedProvince ||
+      !selectedDistrict ||
+      !selectedWard
+    ) {
+      return Toast.show({
+        type: 'error',
+        text2: 'Vui lòng nhập đầy đủ thông tin',
+      });
     }
 
     const token = await getItem('accessToken');
@@ -127,14 +141,19 @@ const OrderScreen = ({route, navigation}: any) => {
     }));
 
     const fullAddress = `${address}, ${selectedWard.label}, ${selectedDistrict.label}, ${selectedProvince.label}`;
+    const orderData = {
+      items,
+      address: fullAddress,
+      paymentMethod: 'COD',
+      recipientName,
+      phoneNumber,
+    };
 
     setLoading(true);
     try {
-      await axios.post(
-        '/order',
-        {items, address: fullAddress, paymentMethod: 'COD'},
-        {headers: {Authorization: `Bearer ${token}`}},
-      );
+      await axios.post('/order', orderData, {
+        headers: {Authorization: `Bearer ${token}`},
+      });
       Toast.show({type: 'success', text2: 'Đặt hàng thành công'});
       navigation.navigate('OrderTracking');
     } catch (err) {
@@ -145,103 +164,112 @@ const OrderScreen = ({route, navigation}: any) => {
   };
 
   return (
-    <FlatList
-      ListHeaderComponent={
-        <>
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Icon
-                name="arrow-left"
-                type="font-awesome"
-                color="#000"
-                size={20}
-              />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Đặt hàng</Text>
-            <View style={{width: 20}} />
-          </View>
-
-          {selectedItems.map(item => (
-            <View key={item._id} style={styles.item}>
-              <Image
-                source={{uri: item.product.imageUrl}}
-                style={styles.image}
-              />
-              <View style={styles.info}>
-                <Text style={styles.name}>{item.product.name}</Text>
-                <Text>
-                  {item.product.price.toLocaleString()} VND x {item.quantity}
-                </Text>
+    <AppMainContainer
+      mainTitle="Đặt hàng"
+      isShowingBackButton={true}
+      isShowRightIcon={false}>
+      <FlatList
+        ListHeaderComponent={
+          <>
+            {selectedItems.map(item => (
+              <View key={item._id} style={styles.item}>
+                <Image
+                  source={{uri: item.product.imageUrl}}
+                  style={styles.image}
+                />
+                <View style={styles.info}>
+                  <Text style={styles.name}>{item.product.name}</Text>
+                  <Text>
+                    {item.product.price.toLocaleString()} VND x {item.quantity}
+                  </Text>
+                </View>
               </View>
-            </View>
-          ))}
+            ))}
 
-          <Text style={styles.total}>
-            Tổng cộng: {totalPrice.toLocaleString()} VND
-          </Text>
-
-          <View style={styles.paymentMethodContainer}>
-            <Icon name="money" type="font-awesome" size={18} color="#28a745" />
-            <Text style={styles.paymentText}>
-              Thanh toán khi nhận hàng (COD)
+            <Text style={styles.total}>
+              Tổng cộng: {totalPrice.toLocaleString()} VND
             </Text>
-          </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Nhập địa chỉ cụ thể (số nhà, đường...)"
-            value={address}
-            onChangeText={setAddress}
-          />
+            <View style={styles.paymentMethodContainer}>
+              <Icon
+                name="money"
+                type="font-awesome"
+                size={18}
+                color="#28a745"
+              />
+              <Text style={styles.paymentText}>
+                Thanh toán khi nhận hàng (COD)
+              </Text>
+            </View>
 
-          {/* Dropdowns */}
-          <CustomDropdown
-            label="Tỉnh/Thành"
-            data={provinces}
-            selected={selectedProvince}
-            onSelect={item => {
-              setSelectedProvince(item);
-              setSelectedDistrict(null);
-              setSelectedWard(null);
-              fetchDistricts(item.value);
-            }}
-          />
-          <CustomDropdown
-            label="Quận/Huyện"
-            data={districts}
-            selected={selectedDistrict}
-            onSelect={item => {
-              setSelectedDistrict(item);
-              setSelectedWard(null);
-              fetchWards(item.value);
-            }}
-          />
-          <CustomDropdown
-            label="Phường/Xã"
-            data={wards}
-            selected={selectedWard}
-            onSelect={setSelectedWard}
-          />
+            {/* New Inputs for Name and Phone */}
+            <TextInput
+              style={styles.input}
+              placeholder="Nhập tên người nhận"
+              value={recipientName}
+              onChangeText={setRecipientName}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Nhập số điện thoại"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              keyboardType="phone-pad"
+            />
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={submitOrder}
-            disabled={loading}>
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Xác nhận đặt hàng</Text>
-            )}
-          </TouchableOpacity>
-        </>
-      }
-      data={[]}
-      contentContainerStyle={styles.listContent}
-      renderItem={null}
-      keyExtractor={() => 'dummy'}
-    />
+            <TextInput
+              style={styles.input}
+              placeholder="Nhập địa chỉ cụ thể (số nhà, đường...)"
+              value={address}
+              onChangeText={setAddress}
+            />
+
+            {/* Dropdowns */}
+            <CustomDropdown
+              label="Tỉnh/Thành"
+              data={provinces}
+              selected={selectedProvince}
+              onSelect={item => {
+                setSelectedProvince(item);
+                setSelectedDistrict(null);
+                setSelectedWard(null);
+                fetchDistricts(item.value);
+              }}
+            />
+            <CustomDropdown
+              label="Quận/Huyện"
+              data={districts}
+              selected={selectedDistrict}
+              onSelect={item => {
+                setSelectedDistrict(item);
+                setSelectedWard(null);
+                fetchWards(item.value);
+              }}
+            />
+            <CustomDropdown
+              label="Phường/Xã"
+              data={wards}
+              selected={selectedWard}
+              onSelect={setSelectedWard}
+            />
+
+            <AuthButton
+              text="Đặt hàng"
+              onPress={submitOrder}
+              loading={loading}
+              disabled={loading}
+            />
+          </>
+        }
+        data={[]}
+        contentContainerStyle={styles.listContent}
+        renderItem={null}
+        keyExtractor={() => 'dummy'}
+      />
+    </AppMainContainer>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -331,17 +359,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: appColors.primary,
-  },
   dropdownLabel: {
     fontSize: 14,
     fontWeight: '600',
@@ -365,21 +382,14 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 10,
     marginTop: 6,
-    maxHeight: 250, // giới hạn hiển thị danh sách
+    maxHeight: 250,
     overflow: 'hidden',
   },
-
   dropdownItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomColor: '#eee',
     borderBottomWidth: 1,
-  },
-  closeBtn: {
-    textAlign: 'center',
-    padding: 14,
-    color: '#007AFF',
-    fontWeight: '600',
   },
 });
 

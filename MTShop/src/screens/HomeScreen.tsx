@@ -209,7 +209,7 @@ const HomeScreen = () => {
         }}>
         <Image
           source={{uri: item.imageUrl}}
-          style={{width: 64, height: 64, borderRadius: 32}}
+          style={{width: 70, height: 70, borderRadius: 35}}
         />
         <Text
           style={{

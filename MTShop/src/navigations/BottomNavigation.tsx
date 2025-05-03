@@ -31,7 +31,6 @@ const CustomTabBarButton: React.FC<BottomTabBarButtonProps> = ({
 
 export default function BottomTabNavigator() {
   const {cartCount} = useCart();
-  showSuccessToast(cartCount.toString());
   return (
     <Tab.Navigator
       screenOptions={{
@@ -87,7 +86,7 @@ export default function BottomTabNavigator() {
         component={CartScreen}
         options={{
           title: 'Đơn hàng',
-          tabBarLabel: 'Đơn h',
+          tabBarLabel: 'Đơn hàng',
           tabBarIcon: ({color}) => (
             <Icon
               name="document-text-outline"

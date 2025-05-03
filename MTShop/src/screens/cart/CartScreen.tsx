@@ -161,7 +161,7 @@ const CartScreen = () => {
               onRemove={() => removeItem(item._id)}
             />
           )}
-          contentContainerStyle={{paddingBottom: 16}}
+          contentContainerStyle={{paddingHorizontal: 8}}
           ListEmptyComponent={
             <Text style={{textAlign: 'center', padding: 40}}>
               Giỏ hàng trống.
