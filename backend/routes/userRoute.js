@@ -7,4 +7,4 @@ export const userRouter = express.Router();
 
 userRouter.route("/").get(verifyUser, userController.getUserInformation);
 userRouter.route("/:id").put(userController.editProfile);
-router.put("/onesignal", verifyUser, userController.updatePlayerId);
+userRouter.put("/onesignal", verifyUser, userController.updatePlayerId);
