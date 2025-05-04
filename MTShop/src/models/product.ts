@@ -7,4 +7,5 @@ export interface Product {
   averageRating: number;
   totalReviews: number;
   totalOrders: number;
+  salePrice?: number;
 }

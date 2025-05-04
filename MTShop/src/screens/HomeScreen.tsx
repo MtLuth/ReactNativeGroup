@@ -48,6 +48,12 @@ const HomeScreen = () => {
   const [searchText, setSearchText] = useState('');
   const limit = 6;
 
+  const screenWidth = Dimensions.get('window').width;
+  const itemSpacing = 10;
+  const numColumns = 2;
+
+  const itemWidth = (screenWidth - itemSpacing * (numColumns + 1)) / numColumns;
+
   const fetchCategories = async () => {
     try {
       const res = await axios.get('/category');
@@ -194,17 +200,24 @@ const HomeScreen = () => {
     }, []),
   );
 
-  const renderItem = ({item}: {item: Product}) => (
-    <ProductCard
-      image={item.imageUrl}
-      name={item.name}
-      price={item.price}
-      rating={item.averageRating}
-      reviewCount={item.totalReviews}
-      soldCount={item.totalOrders}
-      onAddToCart={() => addToCart(item._id)}
-      onPress={() => navigation.navigate('ProductDetail', {id: item._id})}
-    />
+  const renderItem = ({item, index}: {item: Product; index: number}) => (
+    <View
+      style={{
+        width: itemWidth,
+        marginRight: index % 2 === 0 ? 10 : 0,
+      }}>
+      <ProductCard
+        image={item.imageUrl}
+        name={item.name}
+        price={item.price}
+        salePrice={item.salePrice}
+        rating={item.averageRating}
+        reviewCount={item.totalReviews}
+        soldCount={item.totalOrders}
+        onAddToCart={() => addToCart(item._id)}
+        onPress={() => navigation.navigate('ProductDetail', {id: item._id})}
+      />
+    </View>
   );
 
   const renderFeaturedItem = ({item}: {item: Category}) => (
@@ -229,7 +242,6 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      {/* Modal Category */}
       <Modal visible={showModal} transparent animationType="none">
         <View style={styles.modalOverlay}>
           <Animated.View
@@ -239,6 +251,7 @@ const HomeScreen = () => {
             ]}>
             <Text style={styles.modalTitle}>Chọn danh mục</Text>
             <FlatList
+              contentContainerStyle={{paddingHorizontal: 10}}
               data={categories}
               keyExtractor={item => item._id}
               renderItem={({item}) => {
@@ -286,7 +299,6 @@ const HomeScreen = () => {
         </View>
       </Modal>
 
-      {/* Modal Sort */}
       <Modal visible={sortModalVisible} transparent animationType="none">
         <View style={styles.modalOverlay}>
           <Animated.View

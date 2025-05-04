@@ -15,6 +15,7 @@ import {showErrorToast} from '../../utils/toast';
 import {Icon} from 'react-native-elements';
 import {useNavigation} from '@react-navigation/native';
 import AppMainContainer from '../../components/container/AppMainContainer';
+import {createLocalNotification} from '../../utils/notification';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -50,6 +51,7 @@ const NotificationsScreen = () => {
   useEffect(() => {
     fetchNotifications();
     socket.on('notification:new', data => {
+      createLocalNotification('Thông báo mới', data.message);
       setNotifications(prev => [data, ...prev]);
     });
     return () => socket.off('notification:new');

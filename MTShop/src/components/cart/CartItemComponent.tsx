@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {CheckBox, Icon} from 'react-native-elements';
 import {appColors} from '../../themes/appColors';
 import {appFonts} from '../../themes/appFont';
@@ -8,6 +8,7 @@ interface CartItemProps {
   image: string;
   name: string;
   price: number;
+  salePrice?: number;
   quantity: number;
   selected: boolean;
   onSelect: () => void;
@@ -20,6 +21,7 @@ const CartItemComponent: React.FC<CartItemProps> = ({
   image,
   name,
   price,
+  salePrice,
   quantity,
   selected,
   onSelect,
@@ -42,7 +44,17 @@ const CartItemComponent: React.FC<CartItemProps> = ({
           <Text style={styles.name} numberOfLines={2}>
             {name}
           </Text>
-          <Text style={styles.price}>{price.toLocaleString()}₫</Text>
+
+          {salePrice ? (
+            <View style={styles.priceRow}>
+              <Text style={styles.oldPrice}>{price.toLocaleString()} VND</Text>
+              <Text style={styles.salePrice}>
+                {(((100 - salePrice) / 100) * price).toLocaleString()} VND
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.salePrice}>{price.toLocaleString()} VND</Text>
+          )}
         </View>
 
         <View style={styles.actionRow}>
@@ -61,12 +73,14 @@ const CartItemComponent: React.FC<CartItemProps> = ({
             </TouchableOpacity>
 
             <Text style={styles.qtyNumber}>{quantity}</Text>
+
             <TouchableOpacity style={styles.qtyButton} onPress={onIncrease}>
               <Text style={styles.qtyText}>+</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
+
       {onRemove && (
         <TouchableOpacity onPress={onRemove} style={styles.removeButton}>
           <Icon name="trash-2" type="feather" size={20} color="#f33" />
@@ -110,7 +124,18 @@ const styles = StyleSheet.create({
     fontFamily: appFonts.MontserratMedium,
     color: appColors.textPrimary,
   },
-  price: {
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+    gap: 6,
+  },
+  oldPrice: {
+    fontSize: 13,
+    color: '#999',
+    textDecorationLine: 'line-through',
+  },
+  salePrice: {
     fontSize: 16,
     fontFamily: appFonts.MontserratBold,
     color: appColors.primary,

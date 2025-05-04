@@ -1,11 +1,13 @@
 import React from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import {Icon} from 'react-native-elements';
+import {appColors} from '../themes/appColors';
 
 const ProductCard = ({
   image,
   name,
   price,
+  salePrice = null,
   onAddToCart,
   onPress,
   rating = 0,
@@ -30,7 +32,16 @@ const ProductCard = ({
         <Text style={styles.soldText}>{soldCount} đã bán</Text>
       </View>
 
-      <Text style={styles.price}>{price.toLocaleString()} VND</Text>
+      {salePrice ? (
+        <View style={styles.priceRow}>
+          <Text style={styles.oldPrice}>{price.toLocaleString()} VND</Text>
+          <Text style={styles.salePrice}>
+            {((price * (100 - salePrice)) / 100).toLocaleString()} VND
+          </Text>
+        </View>
+      ) : (
+        <Text style={styles.price}>{price.toLocaleString()} VND</Text>
+      )}
 
       <TouchableOpacity style={styles.cartButton} onPress={onAddToCart}>
         <Icon name="shopping-cart" type="font-awesome" color="#fff" size={16} />
@@ -82,12 +93,12 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   price: {
-    color: '#05294B',
+    color: appColors.primary,
     fontSize: 14,
     marginBottom: 10,
   },
   cartButton: {
-    backgroundColor: '#05294B',
+    backgroundColor: appColors.primaryLight,
     flexDirection: 'row',
     justifyContent: 'center',
     paddingVertical: 8,
@@ -98,6 +109,22 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     fontSize: 13,
+  },
+  oldPrice: {
+    fontSize: 13,
+    color: '#999',
+    textDecorationLine: 'line-through',
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  salePrice: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: appColors.primary,
+    marginLeft: 8,
   },
 });
 

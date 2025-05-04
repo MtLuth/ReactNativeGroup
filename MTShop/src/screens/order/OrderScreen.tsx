@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -17,6 +16,7 @@ import {getItem} from '../../utils/storage';
 import {Icon} from 'react-native-elements';
 import AppMainContainer from '../../components/container/AppMainContainer';
 import AuthButton from '../../components/buttons/AuthButton';
+import {appFonts} from '../../themes/appFont';
 
 const CustomDropdown = ({data, selected, onSelect, label}: any) => {
   const [visible, setVisible] = useState(false);
@@ -63,11 +63,9 @@ const OrderScreen = ({route, navigation}: any) => {
   const [recipientName, setRecipientName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
-
   const [provinces, setProvinces] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
   const [wards, setWards] = useState<any[]>([]);
-
   const [selectedProvince, setSelectedProvince] = useState<any>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<any>(null);
   const [selectedWard, setSelectedWard] = useState<any>(null);
@@ -75,7 +73,12 @@ const OrderScreen = ({route, navigation}: any) => {
   const selectedItems = route.params?.selectedItems || [];
 
   const totalPrice = selectedItems.reduce(
-    (total, item) => total + item.product.price * item.quantity,
+    (total, item) =>
+      total +
+      (item.product.salePrice
+        ? ((100 - item.product.salePrice) / 100) * item.product.price
+        : item.product.price) *
+        item.quantity,
     0,
   );
 
@@ -164,23 +167,65 @@ const OrderScreen = ({route, navigation}: any) => {
   };
 
   return (
-    <AppMainContainer
-      mainTitle="Đặt hàng"
-      isShowingBackButton={true}
-      isShowRightIcon={false}>
+    <AppMainContainer mainTitle="Chỉnh sửa hồ sơ" isShowingBackButton>
       <FlatList
         ListHeaderComponent={
           <>
-            {selectedItems.map(item => (
-              <View key={item._id} style={styles.item}>
-                <Image
-                  source={{uri: item.product.imageUrl}}
-                  style={styles.image}
-                />
-                <View style={styles.info}>
-                  <Text style={styles.name}>{item.product.name}</Text>
+            {selectedItems.slice(0, 2).map(item => (
+              <View
+                style={[
+                  {display: 'flex', flexDirection: 'column', padding: 12},
+                  styles.item,
+                ]}
+                key={item.product._id}>
+                <View
+                  style={{flexDirection: 'row', flex: 1, borderBottomWidth: 1}}>
+                  <Image
+                    source={{uri: item.product.imageUrl}}
+                    style={styles.image}
+                  />
+                  <View style={styles.info}>
+                    <Text style={styles.name}>{item.product.name}</Text>
+                    <View style={styles.priceRow}>
+                      {item.product.salePrice ? (
+                        <>
+                          <Text style={styles.oldPrice}>
+                            {item.product.price.toLocaleString()} VND
+                          </Text>
+                          <Text style={styles.salePrice}>
+                            {(
+                              ((100 - item.product.salePrice) / 100) *
+                              item.product.price
+                            ).toLocaleString()}{' '}
+                            VND
+                          </Text>
+                        </>
+                      ) : (
+                        <Text style={styles.oldPrice}>
+                          {item.product.price.toLocaleString()} VND
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    padding: 12,
+                  }}>
+                  <Text style={styles.itemSubtotal}>
+                    Tổng cộng ({item.quantity}) :{' '}
+                  </Text>
                   <Text>
-                    {item.product.price.toLocaleString()} VND x {item.quantity}
+                    {(item.product.salePrice
+                      ? ((100 - item.product.salePrice) / 100) *
+                        item.product.price *
+                        item.quantity
+                      : item.product.price * item.quantity
+                    ).toLocaleString()}{' '}
+                    VND
                   </Text>
                 </View>
               </View>
@@ -215,7 +260,6 @@ const OrderScreen = ({route, navigation}: any) => {
               onChangeText={setPhoneNumber}
               keyboardType="phone-pad"
             />
-
             <TextInput
               style={styles.input}
               placeholder="Nhập địa chỉ cụ thể (số nhà, đường...)"
@@ -223,7 +267,6 @@ const OrderScreen = ({route, navigation}: any) => {
               onChangeText={setAddress}
             />
 
-            {/* Dropdowns */}
             <CustomDropdown
               label="Tỉnh/Thành"
               data={provinces}
@@ -252,77 +295,80 @@ const OrderScreen = ({route, navigation}: any) => {
               onSelect={setSelectedWard}
             />
 
-            <AuthButton
-              text="Đặt hàng"
-              onPress={submitOrder}
-              loading={loading}
-              disabled={loading}
-            />
+            <View style={{marginTop: 16}}>
+              <AuthButton
+                text="Đặt hàng"
+                onPress={submitOrder}
+                loading={loading}
+                disabled={loading}
+              />
+            </View>
           </>
         }
         data={[]}
-        contentContainerStyle={styles.listContent}
         renderItem={null}
         keyExtractor={() => 'dummy'}
+        contentContainerStyle={styles.listContent}
       />
     </AppMainContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#FAFAFA',
-  },
+  listContent: {padding: 20, backgroundColor: '#FAFAFA'},
   item: {
-    flexDirection: 'row',
-    padding: 12,
     backgroundColor: '#fff',
     borderRadius: 10,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  listContent: {
-    padding: 20,
-    backgroundColor: '#FAFAFA',
-  },
-  headerContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-    marginBottom: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#eee',
   },
   image: {
-    width: 60,
-    height: 60,
+    width: 100,
+    height: 100,
     borderRadius: 8,
-    marginRight: 10,
+    margin: 12,
   },
   info: {
     flex: 1,
-    justifyContent: 'center',
+    paddingTop: 12,
+    paddingRight: 12,
   },
   name: {
     fontWeight: '600',
-    fontSize: 15,
-    marginBottom: 4,
+    fontSize: 14,
+    marginBottom: 6,
     color: '#333',
   },
-  total: {
-    fontSize: 18,
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  oldPrice: {
+    fontSize: 13,
+    color: '#999',
+    textDecorationLine: 'line-through',
+    marginRight: 6,
+  },
+  salePrice: {
+    fontSize: 14,
     fontWeight: 'bold',
-    marginVertical: 16,
+    color: '#000',
+  },
+  itemSubtotal: {
+    fontSize: 13,
+    color: '#333',
     textAlign: 'right',
-    color: '#1E3A8A',
+    fontFamily: appFonts.MontserratSemiBold,
+  },
+  total: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginVertical: 12,
+    textAlign: 'center',
+    color: '#05294B',
   },
   paymentMethodContainer: {
     flexDirection: 'row',
@@ -346,18 +392,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: '#fff',
   },
-  button: {
-    backgroundColor: appColors.primary,
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
-  },
   dropdownLabel: {
     fontSize: 14,
     fontWeight: '600',
@@ -375,20 +409,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#333',
   },
-  dropdownModal: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    marginTop: 6,
-    maxHeight: 250,
-    overflow: 'hidden',
-  },
   dropdownItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomColor: '#eee',
     borderBottomWidth: 1,
+  },
+  closeBtn: {
+    textAlign: 'center',
+    color: appColors.primary,
+    fontWeight: 'bold',
   },
 });
 

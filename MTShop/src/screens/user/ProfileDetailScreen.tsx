@@ -139,7 +139,10 @@ const ProfileDetailScreen = () => {
   }
 
   return (
-    <AppMainContainer mainTitle="Chỉnh sửa hồ sơ" isShowingBackButton>
+    <AppMainContainer
+      mainTitle="Chỉnh sửa hồ sơ"
+      isShowingBackButton={true}
+      isShowRightIcon={false}>
       <ScrollView style={styles.container}>
         <View style={styles.avatarWrapper}>
           <TouchableOpacity

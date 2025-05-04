@@ -26,6 +26,7 @@ interface CartItem {
     _id: string;
     name: string;
     price: number;
+    salePrice?: number;
     imageUrl: string;
   };
   quantity: number;
@@ -56,7 +57,12 @@ const CartScreen = () => {
 
   const getTotal = () =>
     getSelectedItems().reduce(
-      (total, item: CartItem) => total + item.product.price * item.quantity,
+      (total, item: CartItem) =>
+        total +
+        (item.product.salePrice
+          ? ((100 - item.product.salePrice) / 100) * item.product.price
+          : item.product.price) *
+          item.quantity,
       0,
     );
 
@@ -159,6 +165,7 @@ const CartScreen = () => {
               name={item.product.name}
               image={item.product.imageUrl}
               price={item.product.price}
+              salePrice={item.product.salePrice}
               quantity={item.quantity}
               selected={selectedItems.includes(item._id)}
               onSelect={() => toggleSelect(item._id)}

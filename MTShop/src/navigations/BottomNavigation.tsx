@@ -69,12 +69,13 @@ export default function BottomTabNavigator() {
       <Tab.Screen
         name="Cart"
         component={CartScreen}
-        options={{
+        initialParams={{navType: 'nav'}}
+        options={({route}) => ({
           tabBarIcon: () => (
             <IconWithBadge
               iconName="shopping-cart"
               iconType="feather"
-              badgeCount={cartCount}
+              badgeCount={cartCount || 0}
               iconStyle={{
                 marginLeft: -2,
               }}
@@ -82,7 +83,7 @@ export default function BottomTabNavigator() {
           ),
           tabBarButton: props => <CustomTabBarButton {...props} />,
           tabBarLabel: '',
-        }}
+        })}
       />
 
       <Tab.Screen
