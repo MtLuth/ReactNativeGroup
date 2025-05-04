@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
   },
   phoneNumber: { type: String, unique: true },
   role: String,
+  oneSignalPlayerId: { type: String },
 });
 
 const User = mongoose.model("User", userSchema);

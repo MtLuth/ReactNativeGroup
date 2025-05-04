@@ -38,7 +38,7 @@ class OrderService {
 
       await notificationService.create(
         userId,
-        "Bạn đã đặt hàng thành công!",
+        `Bạn đã đặt hàng thành công! Mã đơn hàng: ${newOrder._id}`,
         "ORDER_PLACED"
       );
 
@@ -83,7 +83,7 @@ class OrderService {
 
       await notificationService.create(
         userId,
-        "Đơn hàng của bạn đã bị hủy.",
+        `Đơn hàng của bạn (mã: ${order._id}) đã bị hủy.`,
         "ORDER_CANCELED"
       );
 
@@ -105,7 +105,7 @@ class OrderService {
       if (status === "Delivered") {
         await notificationService.create(
           order.user,
-          "Đơn hàng của bạn đã giao thành công!",
+          `Đơn hàng của bạn (mã: ${order._id}) đã giao thành công!`,
           "ORDER_DELIVERED"
         );
       }

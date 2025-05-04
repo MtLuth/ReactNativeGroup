@@ -28,14 +28,16 @@ class ProductController {
   });
 
   createProduct = catchAsync(async (req, res, next) => {
-    const { name, price, imageUrl, description, category } = req.body;
+    const { name, price, imageUrl, description, category, salePrice } =
+      req.body;
 
     const newProduct = await productService.createProduct(
       name,
       price,
       imageUrl,
       description,
-      category
+      category,
+      salePrice
     );
 
     res.status(201).json({
@@ -44,7 +46,6 @@ class ProductController {
     });
   });
 
-  // Lấy sản phẩm theo ID
   getProductById = catchAsync(async (req, res, next) => {
     const { id } = req.params;
 

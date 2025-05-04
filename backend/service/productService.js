@@ -43,6 +43,7 @@ class ProductService {
           averageRating,
           totalReviews,
           totalOrders: orders.length,
+          finalPrice: product.price * (1 - (product.salePrice || 0) / 100),
         });
       }
 
@@ -82,6 +83,7 @@ class ProductService {
         imageUrl,
         description,
         category,
+        salePrice,
       });
       await newProduct.save();
       return newProduct;
@@ -115,6 +117,8 @@ class ProductService {
       product._doc.totalReviews = totalReviews;
       product._doc.totalOrders = orders.length;
       product._doc.reviews = reviews;
+      product._doc.finalPrice =
+        product.price * (1 - (product.salePrice || 0) / 100);
       return product;
     } catch (error) {
       throw new Error("Lỗi khi lấy sản phẩm theo ID: " + error.message);
