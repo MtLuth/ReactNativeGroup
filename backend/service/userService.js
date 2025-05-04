@@ -11,6 +11,21 @@ const validatePhoneNumber = (phoneNumber) => {
 };
 
 class UserService {
+  async updateOneSignalPlayerId(userId, playerId) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("Người dùng không tồn tại!");
+    }
+
+    user.oneSignalPlayerId = playerId;
+    await user.save();
+
+    return {
+      success: true,
+      message: "Cập nhật OneSignal Player ID thành công!",
+    };
+  }
+
   async editProfile(fullName, email, phoneNumber, id, avatar) {
     const user = await User.findById(id);
     if (!user) {

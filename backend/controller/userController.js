@@ -10,7 +10,17 @@ class UserController {
       message: user,
     });
   });
+  updatePlayerId = catchAsync(async (req, res) => {
+    const { playerId } = req.body;
+    const { userId } = req.user;
 
+    const result = await userService.updateOneSignalPlayerId(userId, playerId);
+
+    res.status(200).json({
+      status: "success",
+      message: result.message,
+    });
+  });
   editProfile = catchAsync(async (req, res, next) => {
     const { id } = req.params;
     const { fullName, email, phoneNumber, avatar } = req.body;
