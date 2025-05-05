@@ -37,6 +37,25 @@ class UserController {
       message: updateResponse.message,
     });
   });
+  getAllUsers = catchAsync(async (req, res) => {
+    const users = await userService.getAllUsers();
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+  });
+  updateUserRole = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    const result = await userService.updateUserRole(id, role);
+
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      data: result.user,
+    });
+  });
 }
 
 export default new UserController();

@@ -70,6 +70,28 @@ class UserService {
     const { _id, email, fullName, avatar, phoneNumber } = user;
     return { _id, email, fullName, avatar, phoneNumber };
   }
+  async getAllUsers() {
+    const users = await User.find().select("-password -otp -otpExpires");
+    return users;
+  }
+  async updateUserRole(userId, newRole) {
+    const user = await User.findById(userId);
+    if (!user) throw new Error("Người dùng không tồn tại!");
+
+    user.role = newRole;
+    await user.save();
+
+    return {
+      success: true,
+      message: "Cập nhật vai trò thành công!",
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+      },
+    };
+  }
 }
 
 export default new UserService();

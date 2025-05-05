@@ -19,7 +19,16 @@ class OrderController {
     );
     res.status(201).json({ status: "success", data: order });
   });
-
+  getAllOrders = catchAsync(async (req, res) => {
+    const orders = await orderService.getAllOrders();
+    res.status(200).json({ status: "success", data: orders });
+  });
+  adminUpdateStatus = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    const updatedOrder = await orderService.adminUpdateStatus(id, status);
+    res.status(200).json({ status: "success", data: updatedOrder });
+  });
   getOrderHistory = catchAsync(async (req, res, next) => {
     const userId = req.user.userId;
     const orders = await orderService.getOrdersByUser(userId);

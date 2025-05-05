@@ -18,3 +18,5 @@ orderRouter
   .get(verifyUser, orderController.getOrderById);
 
 orderRouter.route("/cancel/:id").put(verifyUser, orderController.cancelOrder);
+orderRouter.get("/admin/all", orderController.getAllOrders);
+orderRouter.put("/admin/:id/status", orderController.adminUpdateStatus);

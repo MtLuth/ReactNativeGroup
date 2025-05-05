@@ -116,7 +116,27 @@ class OrderService {
       throw err;
     }
   }
+  async getAllOrders() {
+    try {
+      return await Order.find()
+        .populate("user", "fullName email")
+        .populate("items.product", "name price imageUrl")
+        .sort({ createdAt: -1 });
+    } catch (err) {
+      console.error("Lỗi trong getAllOrders:", err);
+      throw err;
+    }
+  }
 
+  async adminUpdateStatus(orderId, status) {
+    const order = await Order.findById(orderId);
+    if (!order) throw new Error("Không tìm thấy đơn hàng");
+
+    order.status = status;
+    await order.save();
+
+    return order;
+  }
   async getOrderById(userId, orderId) {
     try {
       const order = await Order.findOne({ _id: orderId, user: userId })
