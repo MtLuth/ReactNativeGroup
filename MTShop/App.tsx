@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import SplashScreen from './src/screens/SplashScreen';
@@ -24,8 +24,6 @@ import AdminTabSlide from './src/screens/dashboard/navigation/AdminTabSlide.tsx'
 import ProductFilterScreen from './src/screens/product/ProductFilterScreen.tsx';
 import {CartProvider} from './src/context/CartContext.tsx';
 import ProfileDetailScreen from './src/screens/user/ProfileDetailScreen.tsx';
-
-console.log('API URL:', Config.API_URL);
 axios.defaults.baseURL = Config.API_URL;
 const Stack = createStackNavigator();
 
