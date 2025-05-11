@@ -6,7 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
-  Alert,
+  Modal,
 } from 'react-native';
 import axios from 'axios';
 import {Icon} from 'react-native-elements';
@@ -23,72 +23,59 @@ const STATUS_MAP: Record<string, string> = {
 };
 
 const SYSTEM_STATUS = Object.keys(STATUS_MAP);
-
 const LIMIT = 6;
 
 export default function OrderManagerScreen() {
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>('Pending');
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const totalPages = Math.ceil(orders.length / LIMIT);
+  const totalPages = Math.ceil(filteredOrders.length / LIMIT);
 
   const fetchOrders = async () => {
     setLoading(true);
-    const token = await getItem('accessToken');
     try {
+      const token = await getItem('accessToken');
       const res = await axios.get('/order/admin/all', {
         headers: {Authorization: `Bearer ${token}`},
       });
       setOrders(res.data.data);
-    } catch {
+      setFilteredOrders(res.data.data); // Initially show all orders
+    } catch (error) {
       showErrorToast('Không thể tải danh sách đơn hàng');
     } finally {
       setLoading(false);
     }
   };
 
-  const updateStatus = async (orderId: string, newStatus: string) => {
-    const token = await getItem('accessToken');
+  const updateStatus = async () => {
+    if (!selectedOrderId) return;
     try {
+      const token = await getItem('accessToken');
       await axios.put(
-        `/order/admin/${orderId}/status`,
-        {status: newStatus},
+        `/order/admin/${selectedOrderId}/status`,
+        {status: selectedStatus},
         {headers: {Authorization: `Bearer ${token}`}},
       );
       showSuccessToast('Cập nhật trạng thái thành công');
+      setModalVisible(false);
       fetchOrders();
-    } catch {
+    } catch (error) {
       showErrorToast('Lỗi khi cập nhật trạng thái');
     }
   };
 
-  const confirmChange = (orderId: string, currentStatus: string) => {
-    const order: any = orders.find(o => o._id === orderId);
-    if (!order) return;
-
-    const detailMessage =
-      `Người nhận: ${order.recipientName}\n` +
-      `SĐT: ${order.phoneNumber}\n` +
-      `Tổng tiền: ${order.total.toLocaleString()}₫\n` +
-      `Trạng thái hiện tại: ${STATUS_MAP[currentStatus]}`;
-
-    Alert.alert(
-      'Cập nhật trạng thái đơn hàng',
-      detailMessage,
-      [
-        ...SYSTEM_STATUS.map(statusKey => ({
-          text: STATUS_MAP[statusKey],
-          onPress: () => updateStatus(orderId, statusKey),
-          style: statusKey === currentStatus ? 'default' : 'default',
-        })),
-        {
-          text: 'Đóng',
-          style: 'cancel',
-        },
-      ],
-      {cancelable: true},
-    );
+  const filterOrders = (status: string) => {
+    if (status === 'All') {
+      setFilteredOrders(orders); // Show all orders if 'All' is selected
+    } else {
+      setFilteredOrders(orders.filter(order => order.status === status)); // Filter by selected status
+    }
+    setPage(1); // Reset to page 1 when filtering
   };
 
   useEffect(() => {
@@ -109,21 +96,37 @@ export default function OrderManagerScreen() {
           {STATUS_MAP[item.status] || item.status}
         </Text>
       </Text>
-
       <TouchableOpacity
-        onPress={() => confirmChange(item._id, item.status)}
-        style={styles.btn}>
+        style={styles.btn}
+        onPress={() => {
+          setSelectedOrderId(item._id);
+          setSelectedStatus(item.status);
+          setModalVisible(true);
+        }}>
         <Icon name="edit" type="font-awesome" size={14} color="#fff" />
         <Text style={styles.btnText}>Đổi trạng thái</Text>
       </TouchableOpacity>
     </View>
   );
 
-  const currentData = orders.slice((page - 1) * LIMIT, page * LIMIT);
+  const currentData = filteredOrders.slice((page - 1) * LIMIT, page * LIMIT);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Quản lý đơn hàng</Text>
+
+      {/* Dropdown to filter by status */}
+      <View style={styles.filterWrapper}>
+        <Text style={styles.filterLabel}>Lọc theo trạng thái:</Text>
+        <TouchableOpacity
+          style={styles.dropdown}
+          onPress={() => setModalVisible(true)}>
+          <Text style={styles.dropdownText}>
+            {STATUS_MAP[selectedStatus] || 'Tất cả'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {loading ? (
         <ActivityIndicator size="large" color="#05294B" />
       ) : (
@@ -143,11 +146,9 @@ export default function OrderManagerScreen() {
                 style={[styles.pageBtn, page === 1 && styles.pageBtnDisabled]}>
                 <Text style={styles.pageBtnText}>Trang trước</Text>
               </TouchableOpacity>
-
               <Text style={styles.pageNum}>
                 {page}/{totalPages}
               </Text>
-
               <TouchableOpacity
                 onPress={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
@@ -161,6 +162,45 @@ export default function OrderManagerScreen() {
           )}
         </>
       )}
+
+      {/* Modal để chọn trạng thái */}
+      <Modal transparent visible={modalVisible} animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Chọn trạng thái</Text>
+            <TouchableOpacity
+              style={styles.dropdownItem}
+              onPress={() => {
+                setSelectedStatus('All');
+                filterOrders('All');
+                setModalVisible(false);
+              }}>
+              <Text style={styles.dropdownItemText}>Tất cả</Text>
+            </TouchableOpacity>
+            {SYSTEM_STATUS.map(statusKey => (
+              <TouchableOpacity
+                key={statusKey}
+                style={styles.dropdownItem}
+                onPress={() => {
+                  setSelectedStatus(statusKey);
+                  filterOrders(statusKey);
+                  setModalVisible(false);
+                }}>
+                <Text
+                  style={[
+                    styles.dropdownItemText,
+                    selectedStatus === statusKey && {
+                      fontWeight: 'bold',
+                      color: '#007bff',
+                    },
+                  ]}>
+                  {STATUS_MAP[statusKey]}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -168,6 +208,17 @@ export default function OrderManagerScreen() {
 const styles = StyleSheet.create({
   container: {flex: 1, padding: 16, backgroundColor: '#f9f9f9'},
   title: {fontSize: 20, fontWeight: 'bold', marginBottom: 16, color: '#05294B'},
+  filterWrapper: {flexDirection: 'row', alignItems: 'center', marginBottom: 12},
+  filterLabel: {fontSize: 14, color: '#555', marginRight: 8},
+  dropdown: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  dropdownText: {fontSize: 14, color: '#333'},
   card: {
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -218,5 +269,53 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: '#333',
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  dropdownItemText: {
+    fontSize: 14,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 12,
+    gap: 10,
+  },
+  modalBtn: {
+    backgroundColor: '#05294B',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+  },
+  cancelBtn: {
+    backgroundColor: '#999',
+  },
+  modalBtnText: {
+    color: '#fff',
+    fontWeight: '600',
   },
 });

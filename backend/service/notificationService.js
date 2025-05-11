@@ -16,7 +16,7 @@ class NotificationService {
         "⚠️ global.io is undefined – không thể gửi socket notification"
       );
     }
-    await sendPushNotification(userId, message);
+    await this.sendPushNotification(userId, message);
     return noti;
   }
 
